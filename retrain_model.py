@@ -26,7 +26,7 @@ loaded_model = mlflow.xgboost.load_model(model_uri)
 
 # Set additional XGBoost parameters and retrain the mode
 params = {"use_label_encoder": False, "eval_metric": 'logloss'}
-loaded_model.set_params(params)
+loaded_model.set_params(**params)
 loaded_model.fit(X_train, y_train)
 
 # Generate predictions and classification report
