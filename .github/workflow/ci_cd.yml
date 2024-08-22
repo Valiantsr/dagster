@@ -1,4 +1,4 @@
-name: MLflow CI/CD
+name: Model CI/CD
 
 on:
   push:
@@ -26,20 +26,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Jupyter Notebook
+      - name: Generate Dummy Data
         run: |
-          jupyter nbconvert --to notebook --execute mlflow_model_management.ipynb
+          python generate_dummy_data.py
 
-      - name: Log in to Dagshub
+      - name: Retrain Model
         run: |
-          dvc remote modify --local dagshub --auth basic
-          dvc remote modify --local dagshub.user ${{ secrets.DAGSHUB_USER }}
-          dvc remote modify --local dagshub.password ${{ secrets.DAGSHUB_PASSWORD }}
+          python retrain_model.py
 
-      - name: Track and register models in MLflow
+      - name: Test Model
         run: |
-          python track_and_register.py
-
-      - name: Deploy model
-        run: |
-          python deploy_model.py
+          python test_model.py
