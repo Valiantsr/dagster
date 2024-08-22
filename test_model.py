@@ -10,7 +10,8 @@ y_test = testing_data['Target']
 
 # Load the model
 model_name = "XGB-smote"
-model_uri = f"models:/{model_name}@challenger"
+production_model_name = "anomaly-detection-prod"
+model_uri = f"models:/{production_model_name}@champion"
 model = mlflow.xgboost.load_model(model_uri)
 
 # Evaluate the model
