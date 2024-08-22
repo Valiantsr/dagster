@@ -3,9 +3,14 @@ from xgboost import XGBClassifier
 import mlflow
 import mlflow.xgboost
 from mlflow.tracking import MlflowClient
+import os
+
+os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
+os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
+os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.mlflow'
 
 # Set up MLflow tracking URI
-mlflow.set_tracking_uri("https://dagshub.com/valiant.shabri/dagster.mlflow")
+# mlflow.set_tracking_uri("https://dagshub.com/valiant.shabri/dagster.mlflow")
 
 # Specify the name of the registered model you want to retrain
 model_name = "XGB-Smote"
