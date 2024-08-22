@@ -24,10 +24,9 @@ y_train = training_data['Target']
 model_uri = f"models:/{model_name}/{model_version}"
 loaded_model = mlflow.xgboost.load_model(model_uri)
 
-# Set additional XGBoost parameters
-loaded_model.set_params(eval_metric='logloss', use_label_encoder=False)
-
-# Retrain the model
+# Set additional XGBoost parameters and retrain the mode
+params = {"use_label_encoder": False, "eval_metric": 'logloss'}
+loaded_model.set_params(params)
 loaded_model.fit(X_train, y_train)
 
 # Generate predictions and classification report
@@ -40,11 +39,12 @@ with mlflow.start_run(run_name="retrained_model") as run:
     mlflow.xgboost.log_model(loaded_model, "model")
 
     # Log retraining parameters
-    mlflow.log_param("model_name", model_name)
-    mlflow.log_param("model_version", model_version)
-    mlflow.log_param("eval_metric", "logloss")
-    mlflow.log_param("use_label_encoder", False)
-    mlflow.log_param("retraining_version", model_version + 1)
+    mlflow.log_param(params)
+    # mlflow.log_param("model_name", model_name)
+    # mlflow.log_param("model_version", model_version)
+    # mlflow.log_param("eval_metric", "logloss")
+    # mlflow.log_param("use_label_encoder", False)
+    # mlflow.log_param("retraining_version", model_version + 1)
 
     # Log classification report metrics
     mlflow.log_metrics({
@@ -57,7 +57,7 @@ with mlflow.start_run(run_name="retrained_model") as run:
     # Register the retrained model as a new version in the Model Registry
     client = MlflowClient()
     model_uri = f"runs:/{run.info.run_id}/model"
-    client.create_model_version(name=model_name, source=model_uri, run_id=run.info.run_id)
+    client.create_model_version(name=model_name, source=model_uri, run_id=run.info.run_id).version
 
 # Output the registered model URI
 print("Model retrained and logged as a new version in the Model Registry.")
