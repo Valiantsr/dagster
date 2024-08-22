@@ -24,6 +24,9 @@ y_train = training_data['Target']
 model_uri = f"models:/{model_name}/{model_version}"
 loaded_model = mlflow.xgboost.load_model(model_uri)
 
+# Set additional XGBoost parameters
+loaded_model.set_params(eval_metric='logloss', use_label_encoder=False)
+
 # Retrain the model
 loaded_model.fit(X_train, y_train)
 
@@ -39,6 +42,8 @@ with mlflow.start_run(run_name="retrained_model") as run:
     # Log retraining parameters
     mlflow.log_param("model_name", model_name)
     mlflow.log_param("model_version", model_version)
+    mlflow.log_param("eval_metric", "logloss")
+    mlflow.log_param("use_label_encoder", False)
     mlflow.log_param("retraining_version", model_version + 1)
 
     # Log classification report metrics
