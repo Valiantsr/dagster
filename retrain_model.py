@@ -8,8 +8,8 @@ from mlflow.tracking import MlflowClient
 mlflow.set_tracking_uri("https://dagshub.com/valiant.shabri/dagster.mlflow")
 
 # Specify the name of the registered model you want to retrain
-model_name = "your_existing_model_name"
-model_version = 1  # Specify the version you want to load and retrain
+model_name = "XGB-Smote"
+model_version = 2  # Specify the version you want to load and retrain
 
 # Load the generated training data
 training_data = pd.read_csv('training_data.csv')
