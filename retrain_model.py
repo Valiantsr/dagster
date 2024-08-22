@@ -39,12 +39,12 @@ with mlflow.start_run(run_name="retrained_model") as run:
     mlflow.xgboost.log_model(loaded_model, "model")
 
     # Log retraining parameters
-    mlflow.log_param(params)
-    # mlflow.log_param("model_name", model_name)
-    # mlflow.log_param("model_version", model_version)
-    # mlflow.log_param("eval_metric", "logloss")
-    # mlflow.log_param("use_label_encoder", False)
-    # mlflow.log_param("retraining_version", model_version + 1)
+    # mlflow.log_param(params)
+    mlflow.log_param("model_name", model_name)
+    mlflow.log_param("model_version", model_version)
+    mlflow.log_param("eval_metric", "logloss")
+    mlflow.log_param("use_label_encoder", False)
+    mlflow.log_param("retraining_version", model_version + 1)
 
     # Log classification report metrics
     mlflow.log_metrics({
