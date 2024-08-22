@@ -1,4 +1,4 @@
 mlflow
 imblearn
 xgboost
-sklearn
+scikit-learn
