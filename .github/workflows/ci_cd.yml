@@ -35,5 +35,7 @@ jobs:
           python retrain_model.py
 
       - name: Test Model
+        env:
+          MLFLOW_TRACKING_URI: "https://dagshub.com/valiant.shabri/dagster.mlflow"
         run: |
           python test_model.py
