@@ -10,7 +10,7 @@ X_test = testing_data.drop('Target', axis=1)
 y_test = testing_data['Target']
 
 # Load the model
-model_name = "anomaly-detection-prod"
+model_name = "XGB-Smote"
 # production_model_name = "anomaly-detection-prod"
 # latest_version = client.get_latest_versions(model_name, stages=["None", "Production"])[-1]
 client = MlflowClient()
