@@ -67,6 +67,7 @@ model_name = "SentimentAnalysisNLP"
 model_version = "1"
 
 # Load model from MLflow model registry
+model_dir = "sentiment_analysis/models"
 model_uri = f"models:/{model_name}/{model_version}"
 model = mlflow.pyfunc.load_model(model_uri)
 
@@ -96,7 +97,8 @@ with mlflow.start_run(run_name="retrained_sentiment_model"):
     mlflow.pyfunc.log_model(
         artifact_path="model",
         python_model=model._model_impl,  # Use the model from the registry
-        registered_model_name=model_name
+        registered_model_name=model_name,
+        artifacts={"model_dir": model_dir}  # Correct path for saving artifacts
     )
     mlflow.log_metric("training_loss", loss.item())
     mlflow.log_param("learning_rate", 1e-5)
