@@ -63,39 +63,41 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 
 # Model parameters
 model_name = "SentimentAnalysisNLP"
-model_version = "10"
+model_version = "1"
 
 # Load model from MLflow model registry
 model_uri = f"models:/{model_name}/{model_version}"
 model = mlflow.pyfunc.load_model(model_uri)
+
+# Access the tokenizer and model from the context
+tokenizer = model._model_impl.tokenizer
+bert_model = model._model_impl.model
 
 # Load dataset
 data = pd.read_csv('sentiment_analysis/datasets/train_data.csv')
 texts = data['text'].tolist()
 labels = data['label'].tolist()
 
-# Prepare inputs using the tokenizer from the loaded model
-tokenizer = model._model_impl.tokenizer
+# Prepare inputs using the tokenizer
 inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 labels = torch.tensor(labels)
 
 # Fine-tune model
-model._model_impl.model.train()
-outputs = model._model_impl.model(**inputs, labels=labels)
+bert_model.train()
+outputs = bert_model(**inputs, labels=labels)
 loss = outputs.loss
 loss.backward()
-optimizer = torch.optim.Adam(model._model_impl.model.parameters(), lr=1e-5)
+optimizer = torch.optim.Adam(bert_model.parameters(), lr=1e-5)
 optimizer.step()
 
 # Log the retrained model
 with mlflow.start_run(run_name="retrained_sentiment_model"):
     mlflow.pyfunc.log_model(
         artifact_path="model",
-        python_model=SentimentAnalysisModel(),
+        python_model=model._model_impl,  # Use the model from the registry
         registered_model_name=model_name
     )
     mlflow.log_metric("training_loss", loss.item())
     mlflow.log_param("learning_rate", 1e-5)
 
 print("Model retrained and logged successfully.")
-
