@@ -9,7 +9,7 @@ os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
 
 # Load dataset
-data = pd.read_csv('datasets/retrain_data.csv')
+data = pd.read_csv('sentiment_analysis/datasets/retrain_data.csv')
 texts = data['text'].tolist()
 labels = data['label'].tolist()
 
