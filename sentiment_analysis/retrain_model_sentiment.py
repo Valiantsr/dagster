@@ -55,7 +55,7 @@ import mlflow
 import mlflow.pyfunc
 import torch
 import pandas as pd
-from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import BertTokenizer, BertForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification
 
 # Set up MLflow tracking URI
 os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.mlflow'
@@ -67,13 +67,30 @@ model_name = "SentimentAnalysisNLP"
 model_version = "15"
 
 # Load model from MLflow model registry
-model_dir = "sentiment_analysis/models"
 model_uri = f"models:/{model_name}/{model_version}"
-model = mlflow.pyfunc.load_model(model_uri)
+loaded_model = mlflow.pyfunc.load_model(model_uri)
+
+class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
+    def load_context(self, context):
+        model_path = context.artifacts["model_dir"]
+        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
+
+    def predict(self, context, model_input):
+        inputs = self.tokenizer(model_input["text"].tolist(), return_tensors="pt", padding=True, truncation=True)
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+        return outputs.logits.argmax(dim=1).numpy()
+
+# model_dir = loaded_model._model_impl.artifacts["model_dir"]
+# model = mlflow.pyfunc.load_model(model_uri)
 
 # Access the tokenizer and model from the context
-tokenizer = model._model_impl.tokenizer
-bert_model = model._model_impl.model
+model_dir = loaded_model._model_impl.artifacts["model_dir"]
+tokenizer = AutoTokenizer.from_pretrained(model_dir)
+model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+# tokenizer = model._model_impl.tokenizer
+# model = model._model_impl.model
 
 # Load dataset
 data = pd.read_csv('sentiment_analysis/datasets/train_data.csv')
@@ -85,18 +102,19 @@ inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 labels = torch.tensor(labels)
 
 # Fine-tune model
-bert_model.train()
-outputs = bert_model(**inputs, labels=labels)
+model.train()
+outputs = model(**inputs, labels=labels)
 loss = outputs.loss
 loss.backward()
-optimizer = torch.optim.Adam(bert_model.parameters(), lr=1e-5)
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
 optimizer.step()
 
 # Log the retrained model
 with mlflow.start_run(run_name="retrained_sentiment_model"):
     mlflow.pyfunc.log_model(
         artifact_path="model",
-        python_model=model._model_impl,  # Use the model from the registry
+        # python_model=model._model_impl,
+        python_model=SentimentAnalysisModel(),  # Use the model from the registry
         registered_model_name=model_name,
         artifacts={"model_dir": model_dir}  # Correct path for saving artifacts
     )
