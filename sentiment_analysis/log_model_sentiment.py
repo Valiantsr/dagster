@@ -66,9 +66,19 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
         from transformers import BertTokenizer, BertForSequenceClassification, AlbertForSequenceClassification, AutoModelForSequenceClassification, AutoTokenizer
         
         print("Available Artifacts: ", context.artifacts)
-        # Ensure the correct path is used
-        self.tokenizer = AutoTokenizer.from_pretrained(context.artifacts["model_dir"])
-        self.model = AutoModelForSequenceClassification.from_pretrained(context.artifacts["model_dir"])
+        model_path = context.artifacts["model_dir"]
+        print(f"Loading model from: {model_path}")
+        print(f"Files in model directory: {os.listdir(model_path)}")
+
+        try:
+            # Ensure the correct path is used
+            self.tokenizer = AutoTokenizer.from_pretrained(context.artifacts["model_dir"])
+            self.model = AutoModelForSequenceClassification.from_pretrained(context.artifacts["model_dir"])
+            print("Model and tokenizer loaded successfully")
+        except Exception as e:
+            print(f"Error loading model: {str(e)}")
+            raise
+
 
     def predict(self, context, model_input):
         inputs = self.tokenizer(model_input.tolist(), return_tensors="pt", padding=True)
