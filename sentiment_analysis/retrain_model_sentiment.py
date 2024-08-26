@@ -52,6 +52,7 @@
 # print("Model retrained and logged successfully.")
 import os
 import mlflow
+import mlflow.pyfunc
 import torch
 import pandas as pd
 from transformers import BertTokenizer, BertForSequenceClassification
