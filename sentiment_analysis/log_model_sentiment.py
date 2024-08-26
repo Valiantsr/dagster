@@ -1,7 +1,6 @@
 import os
 import mlflow
 import mlflow.pyfunc
-import mlflow
 from mlflow.models.signature import infer_signature
 
 # Setup MLflow tracking URI
@@ -28,15 +27,19 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 
 # Initialize an MLflow run
 with mlflow.start_run(run_name="Sentiment_Analysis_Model_Log"):
-    # Log the custom model
+    # Log the custom model and register it
     mlflow.pyfunc.log_model(
         artifact_path="model",
         python_model=SentimentAnalysisModel(),
         registered_model_name="SentimentAnalysisNLP"
     )
     
-    # Optionally log other artifacts or parameters
+    # Log other artifacts or parameters
     mlflow.log_artifacts(model_dir)
     mlflow.log_param("model_type", "BERT")
 
-print("Model logged successfully.")
+    # Register the model in the MLflow Model Registry
+    model_uri = f"runs:/{mlflow.active_run().info.run_id}/model"
+    mlflow.register_model(model_uri=model_uri, name="SentimentAnalysisNLP")
+
+print("Model logged and registered successfully.")
