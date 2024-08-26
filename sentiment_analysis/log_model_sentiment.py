@@ -64,6 +64,7 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
         import torch
         from transformers import BertTokenizer, BertForSequenceClassification
         
+        print("Available Artifacts: ", context.artifacts)
         # Ensure the correct path is used
         self.tokenizer = BertTokenizer.from_pretrained(context.artifacts["model_dir"])
         self.model = BertForSequenceClassification.from_pretrained(context.artifacts["model_dir"])
@@ -88,3 +89,4 @@ with mlflow.start_run(run_name="Sentiment_Analysis_Model_Log"):
     mlflow.log_param("model_type", "BERT")
 
 print("Model logged and registered successfully.")
+
