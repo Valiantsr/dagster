@@ -63,8 +63,8 @@ os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
 
 # Model parameters
-model_name = "SentimentAnalysis"
-model_version = "1"
+model_name = "SentimentAnalysisNLP"
+model_version = "15"
 
 # Load model from MLflow model registry
 # model_dir = "sentiment_analysis/models"
