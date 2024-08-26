@@ -63,12 +63,12 @@ input_example = ["semuanya masih proses awal belum masuk dalam rapat dpp dan bel
 class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
     def load_context(self, context):
         import torch
-        from transformers import BertTokenizer, BertForSequenceClassification
+        from transformers import BertTokenizer, BertForSequenceClassification, AlbertForSequenceClassification
         
         print("Available Artifacts: ", context.artifacts)
         # Ensure the correct path is used
         self.tokenizer = BertTokenizer.from_pretrained(context.artifacts["model_dir"])
-        self.model = BertForSequenceClassification.from_pretrained(context.artifacts["model_dir"])
+        self.model = AlbertForSequenceClassification.from_pretrained(context.artifacts["model_dir"])
 
     def predict(self, context, model_input):
         inputs = self.tokenizer(model_input.tolist(), return_tensors="pt", padding=True)
