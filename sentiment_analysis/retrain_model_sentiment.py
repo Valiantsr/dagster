@@ -67,7 +67,7 @@ model_name = "SentimentAnalysisNLP"
 model_version = "15"
 
 # Load model from MLflow model registry
-# model_dir = "sentiment_analysis/models"
+model_dir = "sentiment_analysis/models"
 model_uri = f"models:/{model_name}/{model_version}"
 model = mlflow.pyfunc.load_model(model_uri)
 
