@@ -57,6 +57,7 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 # Define model directory and model name
 model_dir = "sentiment_analysis/models"  # Path to the directory containing your model files
 registered_model_name = "SentimentAnalysisNLP"
+input_example = ["semuanya masih proses awal belum masuk dalam rapat dpp dan belum dilaporkan kepada ibu ketua umum"]
 
 # Define a custom model class to log
 class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
@@ -81,6 +82,7 @@ with mlflow.start_run(run_name="Sentiment_Analysis_Model_Log"):
         artifact_path="model",
         python_model=SentimentAnalysisModel(),
         registered_model_name=registered_model_name,
+        input_example=input_example,
         artifacts={"model_dir": model_dir}  # Ensure the correct path is passed as an artifact
     )
     
