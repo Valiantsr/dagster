@@ -11,9 +11,10 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 
 # Load the latest version of the model from the registry
 model_name = "SentimentAnalysisNLP"
-stage = "Production"  # or "Staging", "None", etc.
+model_version = "6"
+# stage = "Production"  # or "Staging", "None", etc.
 
-model_version = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}/{stage}")
+model_version = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}/{model_version}")
 model = model_version._model_impl.model
 tokenizer = BertTokenizer.from_pretrained(model_dir)
 
