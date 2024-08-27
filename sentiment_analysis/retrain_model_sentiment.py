@@ -55,7 +55,7 @@ import mlflow
 import mlflow.pyfunc
 import torch
 import pandas as pd
-from transformers import BertTokenizer, BertForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification
+from transformers import BertTokenizer, BertForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification, AutoConfig
 
 # Set up MLflow tracking URI
 os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.mlflow'
@@ -73,6 +73,7 @@ loaded_model = mlflow.pyfunc.load_model(model_uri)
 class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
     def load_context(self, context):
         model_path = context.artifacts["model_dir"]
+        config = AutoConfig.from_pretrained(model_path)
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
 
