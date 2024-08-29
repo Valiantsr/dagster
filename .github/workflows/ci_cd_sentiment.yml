@@ -60,7 +60,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t valiantsr/sentiment-model:latest .
+          docker build -t valiantsr/sentiment-model:latest sentiment_analysis/.
           docker push valiantsr/sentiment-model:latest
 
       - name: Retrain Model
