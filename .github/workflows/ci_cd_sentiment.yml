@@ -43,7 +43,9 @@
 
 name: CI/CD for Sentiment Model
 
-on: [push]
+on:
+  # [push]
+  workflow_dispatch:
 
 jobs:
   build_and_deploy:
