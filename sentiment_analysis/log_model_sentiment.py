@@ -90,7 +90,7 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
         try:
             # Ensure the correct path is used
             self.tokenizer = BertTokenizer.from_pretrained(context.artifacts["model_dir"])
-            self.model = AutoModelForSequenceClassification.from_pretrained(context.artifacts["model_dir"])
+            self.model = AlbertForSequenceClassification.from_pretrained(context.artifacts["model_dir"])
             print("Model and tokenizer loaded successfully")
         except Exception as e:
             print(f"Error loading model: {str(e)}")
