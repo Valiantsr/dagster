@@ -60,12 +60,12 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t valiantsr/sentimet-model:latest .
-          docker push valiantsr/sentimet-model:latest
+          docker build -t valiantsr/sentiment-model:latest -f sentiment_analysis/Dockerfile .
+          docker push valiantsr/sentiment-model:latest -f sentiment_analysis/Dockerfile
 
         - name: Retrain Model
         run: |
-          docker run --rm valiantsr/sentimet-model:latest python retrain_model_sentiment.py
+          docker run --rm valiantsr/sentiment-model:latest python retrain_model_sentiment.py
 
       - name: Run Tests
-        run: docker run --rm valiantsr/sentimet-model:latest python test_model_sentiment.py
+        run: docker run --rm valiantsr/sentiment-model:latest python test_model_sentiment.py
