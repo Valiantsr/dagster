@@ -75,7 +75,7 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
         model_path = context.artifacts["model_dir"]
         config = AutoConfig.from_pretrained(model_path)
         self.tokenizer = BertTokenizer.from_pretrained(model_path)
-        self.model = AlbertForSequenceClassification.from_pretrained(model_path)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
 
     def predict(self, context, model_input):
         inputs = self.tokenizer(model_input["text"].tolist(), return_tensors="pt", padding=True, truncation=True)
