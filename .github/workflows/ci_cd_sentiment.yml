@@ -63,5 +63,9 @@ jobs:
           docker build -t valiantsr/sentimet-model:latest .
           docker push valiantsr/sentimet-model:latest
 
+        - name: Retrain Model
+        run: |
+          docker run --rm valiantsr/sentimet-model:latest python retrain_model_sentiment.py
+
       - name: Run Tests
         run: docker run --rm valiantsr/sentimet-model:latest python test_model_sentiment.py
