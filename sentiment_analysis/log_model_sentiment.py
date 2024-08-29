@@ -72,7 +72,7 @@ for url, path in files.items():
 
 
 # Define model directory and model name
-model_dir = "sentiment_analysis/models"  # Path to the directory containing your model files
+model_dir = "/app/models"  # Path to the directory containing your model files
 registered_model_name = "SentimentAnalysisNLP"
 input_example = ["semuanya masih proses awal belum masuk dalam rapat dpp dan belum dilaporkan kepada ibu ketua umum"]
 
@@ -115,7 +115,7 @@ with mlflow.start_run(run_name="Sentiment_Analysis_Model_Log"):
     
     # Optionally log other artifacts or parameters
     mlflow.log_artifacts(model_dir)
-    mlflow.log_param("model_type", "BERT")
+    mlflow.log_param("model_type", "ALBERT")
 
 print("Model logged and registered successfully.")
 
