@@ -60,7 +60,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t valiaintsr/sentiment-model:latest .
+          docker build -t valiantsr/sentiment-model:latest .
           docker push valiantsr/sentiment-model:latest
 
       - name: Run Tests
