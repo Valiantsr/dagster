@@ -87,9 +87,9 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 # model = mlflow.pyfunc.load_model(model_uri)
 
 # Access the tokenizer and model from the context
-model_dir = loaded_model._model_impl.artifacts["model_dir"]
-tokenizer = AutoTokenizer.from_pretrained(model_dir)
-model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+# model_dir = loaded_model._model_impl.artifacts["model_dir"]
+# tokenizer = AutoTokenizer.from_pretrained(model_dir)
+# model = AutoModelForSequenceClassification.from_pretrained(model_dir)
 # tokenizer = model._model_impl.tokenizer
 # model = model._model_impl.model
 
@@ -99,10 +99,12 @@ texts = data['text'].tolist()
 labels = data['label'].tolist()
 
 # Prepare inputs using the tokenizer
-inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
+# inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
+inputs = loaded_model._model_impl.tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 labels = torch.tensor(labels)
 
 # Fine-tune model
+model = loaded_model._model_impl.model
 model.train()
 outputs = model(**inputs, labels=labels)
 loss = outputs.loss
@@ -117,7 +119,7 @@ with mlflow.start_run(run_name="retrained_sentiment_model"):
         # python_model=model._model_impl,
         python_model=SentimentAnalysisModel(),  # Use the model from the registry
         registered_model_name=model_name,
-        artifacts={"model_dir": model_dir}  # Correct path for saving artifacts
+        artifacts={"model_dir": loaded_model._model_impl.artifacts["model_dir"]}  # Correct path for saving artifacts
     )
     mlflow.log_metric("training_loss", loss.item())
     mlflow.log_param("learning_rate", 1e-5)

@@ -47,12 +47,29 @@
 import os
 import mlflow
 import mlflow.pyfunc
+import requests
 from mlflow.models.signature import infer_signature
 
 # Setup MLflow tracking URI
 os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.mlflow'
 os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
+
+files = {
+    "https://dagshub.com/valiant.shabri/dagster/src/main/sentiment_analysis/models/config.json": "/app/models/config.json",
+    "https://dagshub.com/valiant.shabri/dagster/src/main/sentiment_analysis/models/model.safetensors": "/app/models/model.safetensors",
+    "https://dagshub.com/valiant.shabri/dagster/src/main/sentiment_analysis/models/vocab.txt": "/app/models/vocab.txt",
+    "https://dagshub.com/valiant.shabri/dagster/src/main/sentiment_analysis/models/tokenizer_config.json": "/app/models/tokenizer_config.json",
+    "https://dagshub.com/valiant.shabri/dagster/src/main/sentiment_analysis/models/special_tokens_map.json": "/app/models/special_tokens_map.json"
+}
+
+for url, path in files.items():
+    if not os.path.exists(path):
+        response = requests.get(url)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'wb') as f:
+            f.write(response.content)
+
 
 # Define model directory and model name
 model_dir = "sentiment_analysis/models"  # Path to the directory containing your model files

@@ -15,11 +15,13 @@ true_labels = test_data['label'].tolist()
 # Load model
 model_uri = f"models:/SentimentAnalysisNLP/latest"
 model = mlflow.pyfunc.load_model(model_uri)
-tokenizer = BertTokenizer.from_pretrained('model')
+# tokenizer = BertTokenizer.from_pretrained('model')
 
 # Prepare inputs
-inputs = tokenizer(texts, return_tensors="pt", padding=True)
-preds = model.predict(inputs)
+# inputs = tokenizer(texts, return_tensors="pt", padding=True)
+# preds = model.predict(inputs)
+inputs = model._model_impl.tokenizer(texts, return_tensors="pt", padding=True)
+preds = model.predict(pd.DataFrame({'text': texts}))
 
 # Calculate accuracy
 accuracy = (preds == true_labels).mean()
