@@ -13,14 +13,14 @@ url = "https://dagshub.com/valiant.shabri/dagster/src/main/s3:/dagster/data/test
 local_path = 'sentiment_analysis/datasets/test_data.tsv'
 
 # Jika file belum ada di direktori lokal, unduh dari DagsHub
-if not os.path.exists(local_path, sep='\t'):
+if not os.path.exists(local_path):
     response = requests.get(url)
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
     with open(local_path, 'wb') as f:
         f.write(response.content)
 
 # Load test dataset
-test_data = pd.read_csv(local_path)
+test_data = pd.read_csv(local_path, sep='\t')
 texts = test_data['text'].tolist()
 true_labels = test_data['label'].tolist()
 
