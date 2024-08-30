@@ -20,7 +20,7 @@ if not os.path.exists(local_path):
         f.write(response.content)
 
 # Load test dataset
-test_data = pd.read_csv(local_path, sep=',')
+test_data = pd.read_csv(local_path, on_bad_lines='skip')
 texts = test_data['text'].tolist()
 true_labels = test_data['label'].tolist()
 
