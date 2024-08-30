@@ -9,8 +9,8 @@ os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
 
 # URL untuk mengunduh test_data.csv dari DagsHub
-url = "https://dagshub.com/valiant.shabri/dagster/src/main/s3:/dagster/data/test_data.tsv"
-local_path = 'sentiment_analysis/datasets/test_data.tsv'
+url = "https://dagshub.com/valiant.shabri/dagster/src/main/s3:/dagster/data/test_data.csv"
+local_path = 'sentiment_analysis/datasets/test_data.csv'
 
 # Jika file belum ada di direktori lokal, unduh dari DagsHub
 if not os.path.exists(local_path):
@@ -20,18 +20,7 @@ if not os.path.exists(local_path):
         f.write(response.content)
 
 # Load test dataset
-test_data = pd.read_csv(local_path, sep='\t')
-
-# Pastikan kolom 'text' dan 'label' ada
-if 'text' not in test_data.columns or 'label' not in test_data.columns:
-    # Jika kolom 'text' tidak ada, buat kolom 'text' dengan data default
-    test_data['text'] = [
-        'bahwa kegagalan mereka untuk mematuhi peraturan keselamatan industri telah menyebabkan tekanan emosional',
-        'negative'
-    ]
-    # Jika kolom 'label' tidak ada, buat kolom 'label' dengan data default
-    test_data['label'] = [0, 1]  # Misalnya 0 untuk negatif, 1 untuk positif
-
+test_data = pd.read_csv(local_path)
 texts = test_data['text'].tolist()
 true_labels = test_data['label'].tolist()
 
