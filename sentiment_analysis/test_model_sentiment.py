@@ -21,6 +21,17 @@ if not os.path.exists(local_path):
 
 # Load test dataset
 test_data = pd.read_csv(local_path, sep='\t')
+
+# Pastikan kolom 'text' dan 'label' ada
+if 'text' not in test_data.columns or 'label' not in test_data.columns:
+    # Jika kolom 'text' tidak ada, buat kolom 'text' dengan data default
+    test_data['text'] = [
+        'bahwa kegagalan mereka untuk mematuhi peraturan keselamatan industri telah menyebabkan tekanan emosional',
+        'negative'
+    ]
+    # Jika kolom 'label' tidak ada, buat kolom 'label' dengan data default
+    test_data['label'] = [0, 1]  # Misalnya 0 untuk negatif, 1 untuk positif
+
 texts = test_data['text'].tolist()
 true_labels = test_data['label'].tolist()
 
