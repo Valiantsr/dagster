@@ -3,6 +3,7 @@ import mlflow
 from transformers import BertTokenizer, BertForSequenceClassification
 import pandas as pd
 import requests
+import csv
 
 os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.mlflow'
 os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
@@ -20,7 +21,7 @@ if not os.path.exists(local_path):
         f.write(response.content)
 
 # Load test dataset
-test_data = pd.read_csv(local_path, encoding='utf-8')
+test_data = pd.read_csv(local_path, quoting=csv.QUOTE_ALL)
 texts = test_data['text'].tolist()
 true_labels = test_data['label'].tolist()
 
