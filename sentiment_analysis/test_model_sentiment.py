@@ -32,7 +32,8 @@ model = mlflow.pyfunc.load_model(model_uri)
 # Prepare inputs
 # inputs = tokenizer(texts, return_tensors="pt", padding=True)
 # preds = model.predict(inputs)
-inputs = model._model_impl.tokenizer(texts, return_tensors="pt", padding=True)
+tokenizer = model._model_impl.tokenizer
+inputs = tokenizer(texts, return_tensors="pt", padding=True)
 preds = model.predict(pd.DataFrame({'text': texts}))
 
 # Calculate accuracy
