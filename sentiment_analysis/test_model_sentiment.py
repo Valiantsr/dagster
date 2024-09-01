@@ -29,11 +29,9 @@ true_labels = test_data['label'].tolist()
 # Load model
 model_uri = f"models:/SentimentAnalysisNLP/latest"
 model = mlflow.pyfunc.load_model(model_uri)
-tokenizer = BertTokenizer.from_pretrained('model')
 
 # Prepare inputs
-# inputs = tokenizer(texts, return_tensors="pt", padding=True)
-# preds = model.predict(inputs)
+tokenizer = BertTokenizer.from_pretrained('model')
 # tokenizer = model._model_impl.tokenizers
 inputs = tokenizer(texts, return_tensors="pt", padding=True)
 preds = model.predict(pd.DataFrame({'text': texts}))
