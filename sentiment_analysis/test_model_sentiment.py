@@ -31,8 +31,8 @@ model_uri = f"models:/SentimentAnalysisNLP/latest"
 model = mlflow.pyfunc.load_model(model_uri)
 
 # Prepare inputs
-tokenizer = BertTokenizer.from_pretrained('model')
-# tokenizer = model._model_impl.tokenizers
+# tokenizer = BertTokenizer.from_pretrained('model')
+tokenizer = model._model_impl.tokenizers
 inputs = tokenizer(texts, return_tensors="pt", padding=True)
 preds = model.predict(pd.DataFrame({'text': texts}))
 
