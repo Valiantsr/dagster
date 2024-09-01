@@ -27,13 +27,30 @@ texts = test_data['text'].tolist()
 true_labels = test_data['label'].tolist()
 
 # Load model
-model_uri = f"models:/SentimentAnalysisNLP/latest"
+registered_model = mlflow.get_latest_registered_model("SentimentAnalysisNLP")
+model_uri = f"models:/{registered_model.name}/{registered_model.version}"
 model = mlflow.pyfunc.load_model(model_uri)
 
 # Prepare inputs
+# Try loading tokenizer from artifact store (Solution 1)
+try:
+  # Download tokenizer config from artifact store
+  artifact_path = "tokenizer_config.json"
+  mlflow.artifacts.download_artifacts(model_uri, artifact_path)
+  tokenizer = BertTokenizer.from_pretrained(artifact_path)
+except (mlflow.exceptions.MlflowException, FileNotFoundError):
+  # Fallback to assuming tokenizer is not available (original approach)
+  tokenizer = None
+
+# Prepare inputs
+if tokenizer:
+  inputs = tokenizer(texts, return_tensors="pt", padding=True)
+else:
+  # Handle the case where tokenizer is not available (e.g., raise exception)
+  raise Exception("Tokenizer not found in model or artifact store")
 # tokenizer = BertTokenizer.from_pretrained('model')
-tokenizer = model._model_impl.tokenizers
-inputs = tokenizer(texts, return_tensors="pt", padding=True)
+# tokenizer = model._model_impl.tokenizers
+# inputs = tokenizer(texts, return_tensors="pt", padding=True)
 preds = model.predict(pd.DataFrame({'text': texts}))
 
 # Calculate accuracy
