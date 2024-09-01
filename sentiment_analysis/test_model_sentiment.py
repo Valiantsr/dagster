@@ -10,7 +10,7 @@ os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
 
 # URL untuk mengunduh test_data.csv dari DagsHub
-url = "https://dagshub.com/valiant.shabri/dagster/src/main/s3:/dagster/data/test.csv"
+url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/test.csv"
 local_path = 'sentiment_analysis/datasets/test.csv'
 
 # Jika file belum ada di direktori lokal, unduh dari DagsHub
@@ -21,8 +21,8 @@ if not os.path.exists(local_path):
         f.write(response.content)
 
 # Load test dataset
-col_names = ['text','label']
-test_data = pd.read_csv(local_path, names=col_names)
+# col_names = ['text','label']
+test_data = pd.read_csv(local_path)
 texts = test_data['text'].tolist()
 true_labels = test_data['label'].tolist()
 
