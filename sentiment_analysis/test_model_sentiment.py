@@ -27,7 +27,8 @@ texts = test_data['text'].tolist()
 true_labels = test_data['label'].tolist()
 
 # Load model
-model_uri = f"models:/SentimentAnalysisNLP/latest"
+# model_uri = f"models:/SentimentAnalysisNLP/latest"
+model_uri = "/tmp/tmp2tvp6jqr/artifacts/models"
 model = mlflow.pyfunc.load_model(model_uri)
 tokenizer = BertTokenizer.from_pretrained('model')
 
