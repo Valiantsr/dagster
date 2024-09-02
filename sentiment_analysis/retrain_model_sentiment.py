@@ -93,6 +93,8 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 # tokenizer = model._model_impl.tokenizer
 # model = model._model_impl.model
 
+model_dir = loaded_model._model_impl.artifacts["model_dir"]
+
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
 local_path = 'sentiment_analysis/datasets/retrain.csv'
 
@@ -110,7 +112,7 @@ labels = data['label'].tolist()
 
 # Prepare inputs using the tokenizer
 # inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
-tokenizer = BertTokenizer.from_pretrained(loaded_model)
+tokenizer = BertTokenizer.from_pretrained(model_dir)
 print(f"Loaded Tokenizer: {tokenizer}")
 inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 labels = torch.tensor(labels)
