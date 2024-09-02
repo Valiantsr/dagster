@@ -62,12 +62,9 @@ os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.
 os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
 
-# Model parameters
-model_name = "SentimentAnalysisNLP"
-model_version = "15"
-
 # Load model from MLflow model registry
-model_uri = f"models:/{model_name}/{model_version}"
+registered_model_name = "SentimentAnalysisNLP"
+model_uri = f"models:/SentimentAnalysisNLP/latest"
 loaded_model = mlflow.pyfunc.load_model(model_uri)
 
 class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
@@ -118,7 +115,7 @@ with mlflow.start_run(run_name="retrained_sentiment_model"):
         artifact_path="model",
         # python_model=model._model_impl,
         python_model=SentimentAnalysisModel(),  # Use the model from the registry
-        registered_model_name=model_name,
+        registered_model_name=registered_model_name,
         artifacts={"model_dir": loaded_model._model_impl.artifacts["model_dir"]}  # Correct path for saving artifacts
     )
     mlflow.log_metric("training_loss", loss.item())
