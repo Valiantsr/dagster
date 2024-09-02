@@ -93,12 +93,16 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 # tokenizer = model._model_impl.tokenizer
 # model = model._model_impl.model
 
-model_dir = "/tmp/sentiment_model"
+model_dir = 'sentiment_analysis'
 
 if not os.path.exists(model_dir):
     os.makedirs(model_dir, exist_ok=True)
     model_artifact_uri = f"{model_uri}/artifacts/model"
     mlflow.artifacts.download_artifacts(model_artifact_uri, dst_path=model_dir)
+
+config = AutoConfig.from_pretrained(model_dir)
+tokenizer = BertTokenizer.from_pretrained(model_dir)
+model = AutoModelForSequenceClassification.from_pretrained(model_dir)
 
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
 local_path = 'sentiment_analysis/datasets/retrain.csv'
@@ -117,14 +121,14 @@ labels = data['label'].tolist()
 
 # Prepare inputs using the tokenizer
 # inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
-tokenizer = BertTokenizer.from_pretrained(model_dir)
-print(f"Loaded Tokenizer: {tokenizer}")
+# tokenizer = BertTokenizer.from_pretrained(model_dir)
+# print(f"Loaded Tokenizer: {tokenizer}")
 inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 labels = torch.tensor(labels)
 
 # Fine-tune model
-model = AutoModelForSequenceClassification.from_pretrained(model_dir)
-print(f"Loaded Model: {model}") 
+# model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+# print(f"Loaded Model: {model}") 
 model.train()
 outputs = model(**inputs, labels=labels)
 loss = outputs.loss
