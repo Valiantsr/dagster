@@ -28,7 +28,7 @@ true_labels = test_data['label'].tolist()
 
 # Load model
 # registered_model = mlflow.get_latest_registered_model("SentimentAnalysisNLP")
-model_uri = f"models://SentimentAnalysisNLP/latest"
+model_uri = f"models:/SentimentAnalysisNLP/latest"
 model = mlflow.pyfunc.load_model(model_uri)
 
 # Prepare inputs

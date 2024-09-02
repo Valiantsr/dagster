@@ -118,4 +118,3 @@ with mlflow.start_run(run_name="Sentiment_Analysis_Model_Log"):
     mlflow.log_param("model_type", "ALBERT")
 
 print("Model logged and registered successfully.")
-
