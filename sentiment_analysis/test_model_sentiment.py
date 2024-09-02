@@ -21,7 +21,6 @@ if not os.path.exists(local_path):
         f.write(response.content)
 
 # Load test dataset
-# col_names = ['text','label']
 test_data = pd.read_csv(local_path)
 texts = test_data['text'].tolist()
 true_labels = test_data['label'].tolist()
@@ -31,12 +30,12 @@ true_labels = test_data['label'].tolist()
 model_uri = f"models:/SentimentAnalysisNLP/latest"
 model = mlflow.pyfunc.load_model(model_uri)
 
-tokenizer_local_path = mlflow.artifacts.download_artifacts(artifact_uri=f"{model_uri}/artifacts/model_dir")
+# tokenizer_local_path = mlflow.artifacts.download_artifacts(artifact_uri=f"{model_uri}/artifacts/model_dir")
 # tokenizer_artifact_uri = f"{model_uri}/artifacts/tokenizer"
-tokenizer = BertTokenizer.from_pretrained(tokenizer_local_path)
+# tokenizer = BertTokenizer.from_pretrained(tokenizer_artifact_uri)
 
 # Prepare inputs
-# tokenizer = BertTokenizer.from_pretrained('model')
+tokenizer = BertTokenizer.from_pretrained('model')
 # tokenizer = model._model_impl.tokenizers
 inputs = tokenizer(texts, return_tensors="pt", padding=True)
 preds = model.predict(pd.DataFrame({'text': texts}))
