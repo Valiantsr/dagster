@@ -31,8 +31,9 @@ true_labels = test_data['label'].tolist()
 model_uri = f"models:/SentimentAnalysisNLP/latest"
 model = mlflow.pyfunc.load_model(model_uri)
 
-tokenizer_artifact_uri = f"{model_uri}/artifacts/tokenizer"
-tokenizer = BertTokenizer.from_pretrained(tokenizer_artifact_uri)
+tokenizer_local_path = mlflow.artifacts.download_artifacts(artifact_uri=f"{model_uri}/artifacts/model_dir")
+# tokenizer_artifact_uri = f"{model_uri}/artifacts/tokenizer"
+tokenizer = BertTokenizer.from_pretrained(tokenizer_local_path)
 
 # Prepare inputs
 # tokenizer = BertTokenizer.from_pretrained('model')
