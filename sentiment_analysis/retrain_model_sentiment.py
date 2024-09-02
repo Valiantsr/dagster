@@ -93,7 +93,7 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 # tokenizer = model._model_impl.tokenizer
 # model = model._model_impl.model
 
-model_dir = 'sentiment_analysis'
+model_dir = 'model_path'
 
 if not os.path.exists(model_dir):
     os.makedirs(model_dir, exist_ok=True)
