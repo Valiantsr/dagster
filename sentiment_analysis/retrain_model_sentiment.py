@@ -55,6 +55,7 @@ import mlflow
 import mlflow.pyfunc
 import torch
 import pandas as pd
+import requests
 from transformers import BertTokenizer, BertForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification, AutoConfig, AlbertForSequenceClassification
 
 # Set up MLflow tracking URI
@@ -90,8 +91,19 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 # tokenizer = model._model_impl.tokenizer
 # model = model._model_impl.model
 
+url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/train.tsv"
+local_path = 'sentiment_analysis/datasets/test.tsv'
+
+# Jika file belum ada di direktori lokal, unduh dari DagsHub
+if not os.path.exists(local_path):
+    response = requests.get(url)
+    os.makedirs(os.path.dirname(local_path), exist_ok=True)
+    with open(local_path, 'wb') as f:
+        f.write(response.content)
+
+
 # Load dataset
-data = pd.read_csv('sentiment_analysis/datasets/train_data.csv')
+data = pd.read_csv('sentiment_analysis/datasets/train_data.tsv', sep='\t')
 texts = data['text'].tolist()
 labels = data['label'].tolist()
 
