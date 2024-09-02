@@ -56,6 +56,7 @@ import mlflow.pyfunc
 import torch
 import pandas as pd
 import requests
+from dagshub.data_engine import datasources
 from transformers import BertTokenizer, BertForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification, AutoConfig, AlbertForSequenceClassification
 
 # Set up MLflow tracking URI
@@ -108,7 +109,8 @@ labels = data['label'].tolist()
 
 # Prepare inputs using the tokenizer
 # inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
-inputs = loaded_model._model_impl.tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
+tokenizer = AutoTokenizer.from_pretrained(loaded_model)
+inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 labels = torch.tensor(labels)
 
 # Fine-tune model
