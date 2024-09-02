@@ -108,7 +108,7 @@ labels = data['label'].tolist()
 
 # Prepare inputs using the tokenizer
 # inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
-tokenizer = AutoTokenizer.from_pretrained(loaded_model)
+tokenizer = BertTokenizer.from_pretrained(loaded_model)
 inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 labels = torch.tensor(labels)
 
