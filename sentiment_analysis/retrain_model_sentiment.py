@@ -74,6 +74,8 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
         config = AutoConfig.from_pretrained(model_path)
         self.tokenizer = BertTokenizer.from_pretrained(model_path)
         self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
+        print(f"Tokenizer: {self.tokenizer}")
+        print(f"Model: {self.model}")
 
     def predict(self, context, model_input):
         inputs = self.tokenizer(model_input["text"].tolist(), return_tensors="pt", padding=True, truncation=True)
@@ -109,11 +111,13 @@ labels = data['label'].tolist()
 # Prepare inputs using the tokenizer
 # inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 tokenizer = BertTokenizer.from_pretrained(loaded_model)
+print(f"Loaded Tokenizer: {tokenizer}")
 inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 labels = torch.tensor(labels)
 
 # Fine-tune model
 model = loaded_model._model_impl.model
+print(f"Loaded Model: {model}") 
 model.train()
 outputs = model(**inputs, labels=labels)
 loss = outputs.loss
