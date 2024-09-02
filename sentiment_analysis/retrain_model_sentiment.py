@@ -139,7 +139,7 @@ with mlflow.start_run(run_name="retrained_sentiment_model"):
         # python_model=model._model_impl,
         python_model=SentimentAnalysisModel(),  # Use the model from the registry
         registered_model_name=registered_model_name,
-        artifacts={"model_dir": loaded_model._model_impl.artifacts["model_dir"]}  # Correct path for saving artifacts
+        artifacts={"model_dir": model_dir}  # Correct path for saving artifacts
     )
     mlflow.log_metric("training_loss", loss.item())
     mlflow.log_param("learning_rate", 1e-5)
