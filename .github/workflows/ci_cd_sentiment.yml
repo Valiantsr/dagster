@@ -68,8 +68,8 @@ jobs:
       - name: Log Model
         run: docker run --rm valiantsr/sentiment-model:latest python log_model_sentiment.py
 
-      # - name: Retrain Model
-      #   run: docker run --rm valiantsr/sentiment-model:latest python retrain_model_sentiment.py
+      - name: Retrain Model
+        run: docker run --rm valiantsr/sentiment-model:latest python retrain_model_sentiment.py
 
       - name: Run Tests
         run: docker run --rm valiantsr/sentiment-model:latest python test_model_sentiment.py
