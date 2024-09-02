@@ -104,7 +104,6 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
             print(f"Error loading model: {str(e)}")
             raise
 
-
     def predict(self, context, model_input):
         inputs = self.tokenizer(model_input.tolist(), return_tensors="pt", padding=True)
         outputs = self.model(**inputs)

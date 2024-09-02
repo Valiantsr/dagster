@@ -102,7 +102,7 @@ if not os.path.exists(local_path):
         f.write(response.content)
 
 # Load dataset
-data = pd.read_csv('sentiment_analysis/datasets/train_data.tsv', sep='\t')
+data = pd.read_csv(local_path, sep='\t')
 texts = data['text'].tolist()
 labels = data['label'].tolist()
 
