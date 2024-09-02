@@ -48,6 +48,8 @@ import os
 import mlflow
 import mlflow.pyfunc
 import requests
+import pandas as pd
+import torch
 from mlflow.models.signature import infer_signature
 
 # Setup MLflow tracking URI
@@ -76,12 +78,18 @@ model_dir = "/app/models"  # Path to the directory containing your model files
 registered_model_name = "SentimentAnalysisNLP"
 input_example = ["semuanya masih proses awal belum masuk dalam rapat dpp dan belum dilaporkan kepada ibu ketua umum"]
 
+from transformers import BertTokenizer, BertForSequenceClassification, AutoModelForSequenceClassification
+
+tokenizer = BertTokenizer.from_pretrained(model_dir)
+model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+
+# Example input for signature inference
+inputs = tokenizer(input_example, return_tensors="pt", padding=True)
+signature = infer_signature(pd.DataFrame({"text": input_example}), model(**inputs).logits.detach().numpy())
+
 # Define a custom model class to log
 class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
     def load_context(self, context):
-        import torch
-        from transformers import BertTokenizer, BertForSequenceClassification, AlbertForSequenceClassification, AutoModelForSequenceClassification, AutoTokenizer
-        
         print("Available Artifacts: ", context.artifacts)
         model_path = context.artifacts["model_dir"]
         print(f"Loading model from: {model_path}")
@@ -110,11 +118,18 @@ with mlflow.start_run(run_name="Sentiment_Analysis_Model_Log"):
         python_model=SentimentAnalysisModel(),
         registered_model_name=registered_model_name,
         input_example=input_example,
+        signature=signature,
         artifacts={"model_dir": model_dir}  # Ensure the correct path is passed as an artifact
     )
+
+    tokenizer_dir = os.path.join(model_dir, "tokenizer")
+    if not os.path.exists(tokenizer_dir):
+        os.makedirs(tokenizer_dir)
+    tokenizer.save_pretrained(tokenizer_dir)
     
     # Optionally log other artifacts or parameters
-    mlflow.log_artifacts(model_dir)
+    mlflow.log_artifacts(tokenizer_dir, artifact_path="tokenizer")
     mlflow.log_param("model_type", "ALBERT")
+    mlflow.log_param("tokenizer", "BERT")
 
 print("Model logged and registered successfully.")
