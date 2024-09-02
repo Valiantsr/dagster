@@ -91,8 +91,8 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 # tokenizer = model._model_impl.tokenizer
 # model = model._model_impl.model
 
-url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/train.tsv"
-local_path = 'sentiment_analysis/datasets/train.tsv'
+url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
+local_path = 'sentiment_analysis/datasets/retrain.csv'
 
 # Jika file belum ada di direktori lokal, unduh dari DagsHub
 if not os.path.exists(local_path):
@@ -102,7 +102,7 @@ if not os.path.exists(local_path):
         f.write(response.content)
 
 # Load dataset
-data = pd.read_csv(local_path, sep='\t')
+data = pd.read_csv(local_path)
 texts = data['text'].tolist()
 labels = data['label'].tolist()
 
