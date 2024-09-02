@@ -92,7 +92,7 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 # model = model._model_impl.model
 
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/train.tsv"
-local_path = 'sentiment_analysis/datasets/test.tsv'
+local_path = 'sentiment_analysis/datasets/train.tsv'
 
 # Jika file belum ada di direktori lokal, unduh dari DagsHub
 if not os.path.exists(local_path):
