@@ -105,6 +105,13 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
             raise
 
     def predict(self, context, model_input):
+        # Check if model_input is a DataFrame, convert it to a list if it is
+        if isinstance(model_input, pd.DataFrame):
+            model_input = model_input.iloc[:, 0].tolist()  # Convert the first column to list
+        elif isinstance(model_input, list):
+            pass  # Already a list, no need to change
+
+
         inputs = self.tokenizer(model_input.tolist(), return_tensors="pt", padding=True)
         outputs = self.model(**inputs)
         return outputs.logits.argmax(dim=1).numpy()
