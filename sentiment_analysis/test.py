@@ -38,7 +38,10 @@ if not os.path.exists(test_path):
 
 test_data = pd.read_csv(test_path)
 test_texts = test_data['text'].tolist()
-test_labels = test_data['label'].tolist()
+
+# Map string labels to integers
+label_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
+test_labels = [label_mapping[label] for label in test_data['label'].tolist()]
 
 # Initialize tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
