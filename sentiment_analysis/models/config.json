@@ -1,5 +1,5 @@
 {
-  "_name_or_path": "notebooks/dagster/sentiment_analysis/models",
+  "_name_or_path": "./dataset/emot_emotion-twitter/dataset_smsa_sentiments_kazee/save_model/sent_statement_llp2_240724",
   "_num_labels": 5,
   "architectures": ["AlbertModel"],
   "attention_probs_dropout_prob": 0,
