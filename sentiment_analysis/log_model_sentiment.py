@@ -30,7 +30,6 @@ for url, path in files.items():
         with open(path, 'wb') as f:
             f.write(response.content)
 
-
 # Define model directory and model name
 model_dir = "/app/models"  # Path to the directory containing your model files
 registered_model_name = "SentimentAnalysisNLP"
