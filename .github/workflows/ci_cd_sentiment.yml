@@ -65,11 +65,20 @@ jobs:
           docker build -t valiantsr/sentiment-model:latest sentiment_analysis/.
           docker push valiantsr/sentiment-model:latest
 
-      - name: Log Model
-        run: docker run --rm valiantsr/sentiment-model:latest python log_model_sentiment.py
+      # - name: Log Model
+      #   run: docker run --rm valiantsr/sentiment-model:latest python log_model_sentiment.py
 
-      - name: Retrain Model
-        run: docker run --rm valiantsr/sentiment-model:latest python retrain_model_sentiment.py
+      # - name: Retrain Model
+      #   run: docker run --rm valiantsr/sentiment-model:latest python retrain_model_sentiment.py
+
+      # - name: Run Tests
+      #   run: docker run --rm valiantsr/sentiment-model:latest python test_model_sentiment.py
+
+      - name: Train Model
+        run: docker run --rm valiantsr/sentiment-model:latest python train.py
+
+      - name: Validate Model
+        run: docker run --rm valiantsr/sentiment-model:latest python validate.py
 
       - name: Run Tests
-        run: docker run --rm valiantsr/sentiment-model:latest python test_model_sentiment.py
+        run: docker run --rm valiantsr/sentiment-model:latest python test.py
