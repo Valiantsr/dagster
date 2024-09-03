@@ -100,10 +100,20 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 #     model_artifact_uri = f"{model_uri}/artifacts/model"
 #     mlflow.artifacts.download_artifacts(model_artifact_uri, dst_path=model_dir)
 
-config = AutoConfig.from_pretrained(loaded_model)
-tokenizer = BertTokenizer.from_pretrained(loaded_model)
-model = AutoModelForSequenceClassification.from_pretrained(loaded_model)
+model_dir = os.path.join(loaded_model._model_impl._model_meta.local_path, "artifacts", "model")
 
+if os.path.exists(model_dir):
+    print(f"Loading model from: {model_dir}")
+    print(f"Files in model directory: {os.listdir(model_dir)}")
+    
+    # Load the model and tokenizer from the model directory
+    config = AutoConfig.from_pretrained(model_dir)
+    tokenizer = BertTokenizer.from_pretrained(model_dir)
+    model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+    
+    print("Model and tokenizer loaded successfully")
+else:
+    raise FileNotFoundError(f"Model directory not found: {model_dir}")
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
 local_path = 'sentiment_analysis/datasets/retrain.csv'
 
