@@ -29,7 +29,7 @@ class SentimentDataset(Dataset):
 
 # Load training data
 train_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/train.tsv"
-train_path = 'train.tsv'
+train_path = 'datasets/train.tsv'
 
 if not os.path.exists(train_path):
     response = requests.get(train_url)

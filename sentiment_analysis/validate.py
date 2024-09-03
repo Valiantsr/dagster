@@ -29,7 +29,7 @@ class SentimentDataset(Dataset):
 
 # Load validation data
 valid_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/valid.tsv"
-valid_path = 'valid.tsv'
+valid_path = 'datasets/valid.tsv'
 
 if not os.path.exists(valid_path):
     response = requests.get(valid_url)

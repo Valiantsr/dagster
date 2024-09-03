@@ -29,7 +29,7 @@ class SentimentDataset(Dataset):
 
 # Load test data
 test_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/test.tsv"
-test_path = 'test.tsv'
+test_path = 'datasets/test.tsv'
 
 if not os.path.exists(test_path):
     response = requests.get(test_url)
