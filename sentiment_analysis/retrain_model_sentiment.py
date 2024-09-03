@@ -68,39 +68,13 @@ registered_model_name = "SentimentAnalysisNLP"
 model_uri = f"models:/SentimentAnalysisNLP/latest"
 loaded_model = mlflow.pyfunc.load_model(model_uri)
 
-class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
-    def load_context(self, context):
-        model_path = context.artifacts["model_dir"]
-        config = AutoConfig.from_pretrained(model_path)
-        self.tokenizer = BertTokenizer.from_pretrained(model_path)
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
-        print(f"Tokenizer: {self.tokenizer}")
-        print(f"Model: {self.model}")
-
-    def predict(self, context, model_input):
-        inputs = self.tokenizer(model_input["text"].tolist(), return_tensors="pt", padding=True, truncation=True)
-        with torch.no_grad():
-            outputs = self.model(**inputs)
-        return outputs.logits.argmax(dim=1).numpy()
-
-# model_dir = loaded_model._model_impl.artifacts["model_dir"]
-# model = mlflow.pyfunc.load_model(model_uri)
-
-# Access the tokenizer and model from the context
-# model_dir = loaded_model._model_impl.artifacts["model_dir"]
-# tokenizer = AutoTokenizer.from_pretrained(model_dir)
-# model = AutoModelForSequenceClassification.from_pretrained(model_dir)
-# tokenizer = model._model_impl.tokenizer
-# model = model._model_impl.model
-
-# model_dir = loaded_model._model_impl.artifacts["model_dir"]
-
 # if not os.path.exists(model_dir):
 #     os.makedirs(model_dir, exist_ok=True)
 #     model_artifact_uri = f"{model_uri}/artifacts/model"
 #     mlflow.artifacts.download_artifacts(model_artifact_uri, dst_path=model_dir)
 
-model_dir = '/tmp/tmprbfienwa/artifacts/models'
+model_dir = loaded_model._model_impl.get_model_meta().local_path
+model_dir = os.path.join(model_dir, "artifacts", "models")
 
 if os.path.exists(model_dir):
     print(f"Loading model from: {model_dir}")
@@ -150,8 +124,7 @@ optimizer.step()
 with mlflow.start_run(run_name="retrained_sentiment_model"):
     mlflow.pyfunc.log_model(
         artifact_path="model",
-        # python_model=model._model_impl,
-        python_model=SentimentAnalysisModel(),  # Use the model from the registry
+        python_model=loaded_model._model_impl,  # Use the model from the registry
         registered_model_name=registered_model_name,
         artifacts={"model_dir": model_dir}  # Correct path for saving artifacts
     )
