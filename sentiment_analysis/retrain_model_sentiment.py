@@ -15,7 +15,7 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 registered_model_name = "SentimentAnalysisNLP"
 model_uri = f"models:/SentimentAnalysisNLP/latest"
 loaded_model = mlflow.pyfunc.load_model(model_uri)
-model = loaded_model._model_impl.model
+model = loaded_model._model_impl(loaded_model)
 tokenizer = BertTokenizer.from_pretrained(loaded_model)
 
 # if not os.path.exists(model_dir):
