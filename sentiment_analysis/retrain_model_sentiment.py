@@ -15,8 +15,6 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 registered_model_name = "SentimentAnalysisNLP"
 model_uri = f"models:/SentimentAnalysisNLP/latest"
 loaded_model = mlflow.pyfunc.load_model(model_uri)
-model = loaded_model._model_impl(loaded_model)
-tokenizer = BertTokenizer.from_pretrained(loaded_model)
 
 # if not os.path.exists(model_dir):
 #     os.makedirs(model_dir, exist_ok=True)
@@ -58,7 +56,7 @@ labels = data['label'].tolist()
 
 # Prepare inputs using the tokenizer
 # inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
-# tokenizer = BertTokenizer.from_pretrained(model_dir)
+tokenizer = BertTokenizer.from_pretrained(loaded_model)
 # print(f"Loaded Tokenizer: {tokenizer}")
 inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 labels = torch.tensor(labels)
@@ -66,11 +64,11 @@ labels = torch.tensor(labels)
 # Fine-tune model
 # model = AutoModelForSequenceClassification.from_pretrained(model_dir)
 # print(f"Loaded Model: {model}") 
-model.train()
-outputs = model(**inputs, labels=labels)
+loaded_model.train()
+outputs = loaded_model(**inputs, labels=labels)
 loss = outputs.loss
 loss.backward()
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
+optimizer = torch.optim.Adam(loaded_model.parameters(), lr=1e-5)
 optimizer.step()
 
 # Log the retrained model
