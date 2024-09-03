@@ -28,8 +28,8 @@ class SentimentDataset(Dataset):
         return inputs
 
 # Load validation data
-valid_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/valid.csv"
-valid_path = 'datasets/valid.csv'
+valid_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/validate.csv"
+valid_path = 'datasets/validate.csv'
 
 if not os.path.exists(valid_path):
     response = requests.get(valid_url)
@@ -38,7 +38,10 @@ if not os.path.exists(valid_path):
 
 valid_data = pd.read_csv(valid_path)
 valid_texts = valid_data['text'].tolist()
-valid_labels = valid_data['label'].tolist()
+
+# Map string labels to integers
+label_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
+valid_labels = [label_mapping[label] for label in valid_data['label'].tolist()]
 
 # Initialize tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
