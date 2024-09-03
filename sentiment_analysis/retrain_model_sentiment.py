@@ -15,7 +15,7 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 registered_model_name = "SentimentAnalysisNLP"
 model_uri = f"models:/SentimentAnalysisNLP/latest"
 loaded_model = mlflow.pyfunc.load_model(model_uri)
-model_dir = loaded_model
+model_dir = "/app/models"
 # if not os.path.exists(model_dir):
 #     os.makedirs(model_dir, exist_ok=True)
 #     model_artifact_uri = f"{model_uri}/artifacts/model"
