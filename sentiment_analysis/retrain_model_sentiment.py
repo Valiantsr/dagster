@@ -99,9 +99,8 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 #     os.makedirs(model_dir, exist_ok=True)
 #     model_artifact_uri = f"{model_uri}/artifacts/model"
 #     mlflow.artifacts.download_artifacts(model_artifact_uri, dst_path=model_dir)
-model_run_id = loaded_model.metadata.run_id
-model_artifact_path = loaded_model.metadata.artifact_path
-model_dir = f"/tmp/mlflow_artifacts/{model_run_id}/{model_artifact_path}/artifacts/models"
+
+model_dir = '/tmp/tmprbfienwa/artifacts/models'
 
 if os.path.exists(model_dir):
     print(f"Loading model from: {model_dir}")
