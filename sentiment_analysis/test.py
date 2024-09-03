@@ -28,15 +28,15 @@ class SentimentDataset(Dataset):
         return inputs
 
 # Load test data
-test_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/test.tsv"
-test_path = 'datasets/test.tsv'
+test_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/test.tcv"
+test_path = 'datasets/test.csv'
 
 if not os.path.exists(test_path):
     response = requests.get(test_url)
     with open(test_path, 'wb') as f:
         f.write(response.content)
 
-test_data = pd.read_csv(test_path, sep='\t')
+test_data = pd.read_csv(test_path)
 test_texts = test_data['text'].tolist()
 test_labels = test_data['label'].tolist()
 

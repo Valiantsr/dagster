@@ -28,15 +28,15 @@ class SentimentDataset(Dataset):
         return inputs
 
 # Load validation data
-valid_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/valid.tsv"
-valid_path = 'datasets/valid.tsv'
+valid_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/valid.csv"
+valid_path = 'datasets/valid.csv'
 
 if not os.path.exists(valid_path):
     response = requests.get(valid_url)
     with open(valid_path, 'wb') as f:
         f.write(response.content)
 
-valid_data = pd.read_csv(valid_path, sep='\t')
+valid_data = pd.read_csv(valid_path)
 valid_texts = valid_data['text'].tolist()
 valid_labels = valid_data['label'].tolist()
 

@@ -28,15 +28,15 @@ class SentimentDataset(Dataset):
         return inputs
 
 # Load training data
-train_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/train.tsv"
-train_path = 'datasets/train.tsv'
+train_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/train.csv"
+train_path = 'datasets/train.csv'
 
 if not os.path.exists(train_path):
     response = requests.get(train_url)
     with open(train_path, 'wb') as f:
         f.write(response.content)
 
-train_data = pd.read_csv(train_path, sep='\t')
+train_data = pd.read_csv(train_path)
 train_texts = train_data['text'].tolist()
 train_labels = train_data['label'].tolist()
 
