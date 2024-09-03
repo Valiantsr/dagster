@@ -15,7 +15,7 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 registered_model_name = "SentimentAnalysisNLP"
 model_uri = f"models:/SentimentAnalysisNLP/latest"
 loaded_model = mlflow.pyfunc.load_model(model_uri)
-
+model_dir = loaded_model
 # if not os.path.exists(model_dir):
 #     os.makedirs(model_dir, exist_ok=True)
 #     model_artifact_uri = f"{model_uri}/artifacts/model"
@@ -26,18 +26,18 @@ loaded_model = mlflow.pyfunc.load_model(model_uri)
 
 # model_dir = model_uri
 
-# if os.path.exists(model_dir):
-#     print(f"Loading model from: {model_dir}")
-#     print(f"Files in model directory: {os.listdir(model_dir)}")
+if os.path.exists(model_dir):
+    print(f"Loading model from: {model_dir}")
+    print(f"Files in model directory: {os.listdir(model_dir)}")
     
-#     # Load the model and tokenizer from the model directory
-#     config = AutoConfig.from_pretrained(model_dir)
-#     tokenizer = BertTokenizer.from_pretrained(model_dir)
-#     model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+    # Load the model and tokenizer from the model directory
+    config = AutoConfig.from_pretrained(model_dir)
+    tokenizer = BertTokenizer.from_pretrained(model_dir)
+    model = AutoModelForSequenceClassification.from_pretrained(model_dir)
     
-#     print("Model and tokenizer loaded successfully")
-# else:
-#     raise FileNotFoundError(f"Model directory not found: {model_dir}")
+    print("Model and tokenizer loaded successfully")
+else:
+    raise FileNotFoundError(f"Model directory not found: {model_dir}")
 
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
 local_path = 'sentiment_analysis/datasets/retrain.csv'
