@@ -73,8 +73,9 @@ loaded_model = mlflow.pyfunc.load_model(model_uri)
 #     model_artifact_uri = f"{model_uri}/artifacts/model"
 #     mlflow.artifacts.download_artifacts(model_artifact_uri, dst_path=model_dir)
 
-model_dir = loaded_model._model_impl.get_model_meta().local_path
-model_dir = os.path.join(model_dir, "artifacts", "models")
+# model_dir = loaded_model._model_impl.get_model_meta().local_path
+# model_dir = os.path.join(model_dir, "artifacts", "models")
+model_dir = loaded_model
 
 if os.path.exists(model_dir):
     print(f"Loading model from: {model_dir}")
