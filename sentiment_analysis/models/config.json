@@ -1,9 +1,7 @@
 {
-  "_name_or_path": "./dataset/emot_emotion-twitter/dataset_smsa_sentiments_kazee/save_model/sent_statement_llp2_240724",
+  "_name_or_path": "sentiment_analysis/models",
   "_num_labels": 5,
-  "architectures": [
-    "AlbertModel"
-  ],
+  "architectures": ["AlbertModel"],
   "attention_probs_dropout_prob": 0,
   "bos_token_id": 2,
   "classifier_dropout_prob": 0.1,
