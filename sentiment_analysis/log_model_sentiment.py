@@ -8,12 +8,18 @@ import mlflow.pyfunc
 import requests
 import pandas as pd
 import torch
+import sys
+import cloudpickle
+import transformers
 from mlflow.models.signature import infer_signature
 
 # Setup MLflow tracking URI
 os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.mlflow'
 os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
+
+PYTHON_VERSION = "{major}.{minor}.1".format(major=sys.version_info.major,
+                                            minor=sys.version_info.minor)
 
 files = {
     "https://dagshub.com/valiant.shabri/dagster/src/main/sentiment_analysis/models/config.json": "/app/models/config.json",
@@ -43,6 +49,23 @@ model = AutoModelForSequenceClassification.from_pretrained(model_dir)
 # Example input for signature inference
 inputs = tokenizer(input_example, return_tensors="pt", padding=True)
 signature = infer_signature(pd.DataFrame({"text": input_example}), model(**inputs).logits.detach().numpy())
+
+conda_env = {
+    'channels': ['defaults'],
+    'dependencies': [
+        'python~={}'.format(PYTHON_VERSION),
+        'pip',
+        {
+            'pip': [
+                'mlflow',
+                'transformers',
+                'torch',
+                'cloudpickle=={}'.format(cloudpickle.__version__),
+            ],
+        },
+    ],
+    'name': 'sentiment_analysis_env'
+}
 
 # Define a custom model class to log
 class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
@@ -82,7 +105,8 @@ with mlflow.start_run(run_name="Sentiment_Analysis_Model_Log"):
         registered_model_name=registered_model_name,
         input_example=input_example,
         signature=signature,
-        artifacts={"model_dir": model_dir}  # Ensure the correct path is passed as an artifact
+        artifacts={"model_dir": model_dir},  # Ensure the correct path is passed as an artifact
+        conda_env=conda_env
     )
 
     tokenizer_dir = os.path.join(model_dir, "tokenizer")
