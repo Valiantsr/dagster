@@ -77,8 +77,8 @@ jobs:
       - name: Training Model
         run: docker run --rm valiantsr/sentiment-model:latest python train.py
 
-      # - name: Validate Model
-      #   run: docker run --rm valiantsr/sentiment-model:latest python validate.py
-
       - name: Run Tests
         run: docker run --rm valiantsr/sentiment-model:latest python test.py
+
+      - name: Retrain Model
+        run: docker run --rm valiantsr/sentiment-model:latest python retrain.py
