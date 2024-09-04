@@ -58,15 +58,7 @@ epochs = 3
 losses = []
 
 # Ensure any active run is ended before starting a new one
-mlflow.end_run()
-
-# Log hyperparameters to MLflow
-mlflow.log_params({
-    "learning_rate": 2e-5,
-    "batch_size": 16,
-    "epochs": epochs,
-    "model_name": "indobenchmark/indobert-base-p1",
-})
+# mlflow.end_run()
 
 with mlflow.start_run(run_name="IndoBERT_Sentiment_Training"):
     for epoch in range(epochs):  # 3 epochs for demonstration
@@ -82,6 +74,13 @@ with mlflow.start_run(run_name="IndoBERT_Sentiment_Training"):
         losses.append(epoch_loss / len(train_loader))
         mlflow.log_metric("train_loss", epoch_loss / len(train_loader), step=epoch)
 
+    # Log hyperparameters to MLflow
+    mlflow.log_params({
+        "learning_rate": 2e-5,
+        "batch_size": 16,
+        "epochs": epochs,
+        "model_name": "indobenchmark/indobert-base-p1",
+    })
     # Log model to MLflow and register it in the model registry
     model_info = mlflow.pytorch.log_model(model, artifact_path="model")
     
