@@ -13,8 +13,13 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
 
 # Load the latest model from MLflow
-model_uri = f"models:/IndoBERT_Sentiment_Model/latest"
+model_uri = "models:/IndoBERT_Sentiment_Model/latest"
 model = mlflow.pytorch.load_model(model_uri)
+
+# Retrieve the run ID associated with the loaded model
+client = mlflow.tracking.MlflowClient()
+latest_version = client.get_latest_versions("IndoBERT_Sentiment_Model", stages=["Production"])[0]
+run_id = latest_version.run_id
 
 # Custom sentences to test
 sentences = [
@@ -38,8 +43,8 @@ label_mapping = {0: 'negative', 1: 'neutral', 2: 'positive'}
 predicted_labels = [label_mapping[pred.item()] for pred in predictions]
 predicted_probs = probabilities.tolist()
 
-# Log results with MLflow
-with mlflow.start_run(run_name="IndoBERT_Sentiment_Custom_Testing"):
+# Log results to the original run associated with the model
+with mlflow.start_run(run_id=run_id):
     for i, sentence in enumerate(sentences):
         print(f"Sentence: {sentence}")
         print(f"Predicted Label: {predicted_labels[i]} ({predicted_probs[i]})")
