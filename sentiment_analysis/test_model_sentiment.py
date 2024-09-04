@@ -1,7 +1,7 @@
 import os
 import mlflow
 import torch
-from transformers import BertTokenizer
+from transformers import AutoTokenizer
 import pandas as pd
 import requests
 
@@ -22,7 +22,7 @@ model_uri = "models:/SentimentAnalysisNLP/latest"
 loaded_model = mlflow.pytorch.load_model(model_uri)
 
 # Load tokenizer yang sesuai dengan model yang diload
-tokenizer = BertTokenizer.from_pretrained(model_uri)
+tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
 
 # Tokenisasi input sentences
 inputs = tokenizer(sentences, return_tensors="pt", padding=True, truncation=True)

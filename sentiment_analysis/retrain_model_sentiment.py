@@ -4,7 +4,7 @@ import mlflow.pyfunc
 import torch
 import pandas as pd
 import requests
-from transformers import BertTokenizer, AutoModelForSequenceClassification, AdamW
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, AdamW
 
 # Set up MLflow tracking URI
 os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.mlflow'
@@ -23,7 +23,7 @@ model_dir = '/tmp/sentiment_analysis_model'
 os.makedirs(model_dir, exist_ok=True)
 
 # Load the tokenizer and model from the MLflow model registry
-tokenizer = BertTokenizer.from_pretrained(model_uri)
+tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
 model = AutoModelForSequenceClassification.from_pretrained(model_uri)
 
 # Download dataset
