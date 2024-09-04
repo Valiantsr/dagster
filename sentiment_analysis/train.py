@@ -38,7 +38,7 @@ def load_dataset(data_url):
     return texts, labels
 
 train_texts, train_labels = load_dataset("https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/train.csv")
-valid_texts, valid_labels = load_dataset("https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/valid.csv")
+valid_texts, valid_labels = load_dataset("https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/validate.csv")
 
 # Initialize tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
