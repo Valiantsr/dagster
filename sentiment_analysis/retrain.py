@@ -54,7 +54,7 @@ model_name = "IndoBERT_Sentiment_Model"
 client = mlflow.tracking.MlflowClient()
 latest_version = client.get_latest_versions(model_name, stages=["None"])[-1].version
 model_uri = f"models:/{model_name}/{latest_version}"
-model = mlflow.pytorch.load_model(model_uri)._model_impl.model
+model = mlflow.pytorch.load_model(model_uri)
 
 # Training and validation function
 def train_and_validate(model, train_loader, valid_loader, epochs=3, learning_rate=2e-5):
