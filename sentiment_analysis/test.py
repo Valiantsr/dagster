@@ -13,7 +13,7 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
 
 # Load the latest model from MLflow
-model_uri = f"models:/IndoBERT_Sentiment_Training_And_Validation/latest"
+model_uri = f"models:/IndoBERT_Sentiment_Model/latest"
 model = mlflow.pytorch.load_model(model_uri)
 
 # Custom sentences to test

@@ -104,5 +104,25 @@ def train_and_validate(model, train_loader, valid_loader, epochs=3, learning_rat
 if __name__ == "__main__":
     mlflow.pytorch.autolog()
 
-    with mlflow.start_run(run_name="IndoBERT_Sentiment_Training_And_Validation"):
+    with mlflow.start_run(run_name="IndoBERT_Sentiment_Training_And_Validation") as run:
+        # Log hyperparameters
+        mlflow.log_param("epochs", 3)
+        mlflow.log_param("learning_rate", 2e-5)
+        mlflow.log_param("batch_size", 16)
+        mlflow.log_param("model_name", "indobenchmark/indobert-base-p1")
+
         train_and_validate(model, train_loader, valid_loader, epochs=3, learning_rate=2e-5)
+        
+        # Log the model
+        mlflow.pytorch.log_model(model, "model")
+        
+        # Register the model to MLflow Model Registry
+        mlflow.register_model(f"runs:/{run.info.run_id}/model", "IndoBERT_Sentiment_Model")
+
+        # Optionally, promote the model to 'Production' stage
+        client = mlflow.tracking.MlflowClient()
+        client.transition_model_version_stage(
+            name="IndoBERT_Sentiment_Model",
+            version=1,  # Adjust this version number based on your existing model versions
+            stage="Production"
+        )
