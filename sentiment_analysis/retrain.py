@@ -122,12 +122,15 @@ if __name__ == "__main__":
         # Log the retrained model
         mlflow.pytorch.log_model(model, "model")
         
+        latest_version = int(latest_version)  # Convert the latest version to an integer
+        new_version = latest_version + 1  # Increment the version number
+
         # Register the retrained model to MLflow Model Registry
         mlflow.register_model(f"runs:/{run.info.run_id}/model", model_name)
 
         # Optionally, promote the retrained model to 'Production' stage
         client.transition_model_version_stage(
             name=model_name,
-            version=latest_version + 1,
+            version=new_version,
             stage="Production"
         )
