@@ -13,14 +13,14 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
 
 # Load the latest model from MLflow
-model_uri = "models:/IndoBERT_Sentiment/latest"
+model_uri = f"models:/IndoBERT-Sentiment-Model/latest"
 model = mlflow.pytorch.load_model(model_uri)
 
 # Custom sentences to test
 sentences = [
-    "Saya sangat senang dengan pelayanan di restoran ini.",
-    "Makanannya tidak enak dan pelayanannya buruk.",
-    "Pengalaman saya di toko ini biasa saja."
+    "polri bertugas secara profesional dan tak pandang bulu.",
+    "semuanya masih proses awal belum masuk dalam rapat dpp dan belum dilaporkan kepada ibu ketua umum",
+    "enggak ada ancaman, cuman dibilangnya percuma punya teman punya saudara jadi pj gubernur, tapi gak ada gunanya"
 ]
 
 # Tokenize the sentences
