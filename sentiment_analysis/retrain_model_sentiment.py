@@ -21,7 +21,7 @@ model_dir = '/tmp/sentiment_analysis_model'
 os.makedirs(model_dir, exist_ok=True)
 
 # Download and extract the model artifacts from MLflow
-mlflow.pyfunc.download_artifacts(model_uri, dst_path=model_dir)
+mlflow.artifacts.download_artifacts(model_uri, dst_path=model_dir)
 
 # Load the tokenizer and model from the downloaded artifacts
 tokenizer = AutoTokenizer.from_pretrained(model_dir)
