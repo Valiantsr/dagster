@@ -18,7 +18,7 @@ sentences = [
 ]
 
 # Load model dari MLflow Model Registry
-model_uri = "models:/SentimentAnalysisNLP/latest"
+model_uri = f"models:/SentimentAnalysisNLP/latest"
 loaded_model = mlflow.pytorch.load_model(model_uri)
 
 # Load tokenizer yang sesuai dengan model yang diload
