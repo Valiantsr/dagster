@@ -57,6 +57,9 @@ optimizer = AdamW(model.parameters(), lr=2e-5)
 epochs = 3
 losses = []
 
+# Ensure any active run is ended before starting a new one
+mlflow.end_run()
+
 # Log hyperparameters to MLflow
 mlflow.log_params({
     "learning_rate": 2e-5,
