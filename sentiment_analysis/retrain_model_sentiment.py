@@ -4,7 +4,7 @@ import mlflow.pyfunc
 import torch
 import pandas as pd
 import requests
-from transformers import BertTokenizer, BertForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification, AutoConfig, AlbertForSequenceClassification
+from transformers import BertTokenizer, AutoModelForSequenceClassification, AdamW
 
 # Set up MLflow tracking URI
 os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.mlflow'
@@ -12,41 +12,26 @@ os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
 
 # Load model from MLflow model registry
-registered_model_name = "SentimentAnalysisNLP"
-model_uri = f"models:/SentimentAnalysisNLP/latest"
+model_name = "SentimentAnalysisNLP"
+client = mlflow.tracking.MlflowClient()
+latest_version = client.get_latest_versions(model_name, stages=["None"])[-1].version
+model_uri = f"models:/{model_name}/{latest_version}"
 loaded_model = mlflow.pyfunc.load_model(model_uri)
-model_dir = f"runs:/{mlflow.active_run().info.run_id}/model"
 
-# if not os.path.exists(model_dir):
-#     os.makedirs(model_dir, exist_ok=True)
-#     model_artifact_uri = f"{model_uri}/artifacts/model"
-#     mlflow.artifacts.download_artifacts(model_artifact_uri, dst_path=model_dir)
+# Prepare the directory where the model files will be saved
+model_dir = '/tmp/sentiment_analysis_model'
+os.makedirs(model_dir, exist_ok=True)
 
-# model_dir = loaded_model._model_impl.get_model_meta().local_path
-# model_dir = os.path.join(model_dir, "artifacts", "models")
+# Load the tokenizer and model from the MLflow model registry
+tokenizer = BertTokenizer.from_pretrained(model_uri)
+model = AutoModelForSequenceClassification.from_pretrained(model_uri)
 
-# model_dir = model_uri
-
-if os.path.exists(model_dir):
-    print(f"Loading model from: {model_dir}")
-    print(f"Files in model directory: {os.listdir(model_dir)}")
-    
-    # Load the model and tokenizer from the model directory
-    config = AutoConfig.from_pretrained(model_dir)
-    tokenizer = BertTokenizer.from_pretrained(model_dir)
-    model = AutoModelForSequenceClassification.from_pretrained(model_dir)
-    
-    print("Model and tokenizer loaded successfully")
-else:
-    raise FileNotFoundError(f"Model directory not found: {model_dir}")
-
+# Download dataset
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
-local_path = 'sentiment_analysis/datasets/retrain.csv'
+local_path = os.path.join(model_dir, 'retrain.csv')
 
-# Jika file belum ada di direktori lokal, unduh dari DagsHub
 if not os.path.exists(local_path):
     response = requests.get(url)
-    os.makedirs(os.path.dirname(local_path), exist_ok=True)
     with open(local_path, 'wb') as f:
         f.write(response.content)
 
@@ -56,29 +41,25 @@ texts = data['text'].tolist()
 labels = data['label'].tolist()
 
 # Prepare inputs using the tokenizer
-# inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
-tokenizer = BertTokenizer.from_pretrained(loaded_model)
-# print(f"Loaded Tokenizer: {tokenizer}")
 inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 labels = torch.tensor(labels)
 
 # Fine-tune model
-# model = AutoModelForSequenceClassification.from_pretrained(model_dir)
-# print(f"Loaded Model: {model}") 
-loaded_model.train()
-outputs = loaded_model(**inputs, labels=labels)
+model.train()
+outputs = model(**inputs, labels=labels)
 loss = outputs.loss
 loss.backward()
-optimizer = torch.optim.Adam(loaded_model.parameters(), lr=1e-5)
+
+# Set up optimizer
+optimizer = AdamW(model.parameters(), lr=1e-5)
 optimizer.step()
 
-# Log the retrained model
+# Log the retrained model to MLflow
 with mlflow.start_run(run_name="retrained_sentiment_model"):
-    mlflow.pyfunc.log_model(
+    mlflow.pytorch.log_model(
+        pytorch_model=model,
         artifact_path="model",
-        python_model=loaded_model._model_impl,  # Use the model from the registry
-        registered_model_name=registered_model_name,
-        artifacts={"model_dir": model_dir}  # Correct path for saving artifacts
+        registered_model_name=model_name
     )
     mlflow.log_metric("training_loss", loss.item())
     mlflow.log_param("learning_rate", 1e-5)

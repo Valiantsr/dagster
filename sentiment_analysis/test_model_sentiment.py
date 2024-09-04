@@ -1,45 +1,42 @@
 import os
 import mlflow
-from transformers import BertTokenizer, BertForSequenceClassification
+import torch
+from transformers import BertTokenizer
 import pandas as pd
 import requests
-import csv
 
+# Konfigurasi MLflow tracking URI
 os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.mlflow'
 os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
 
-# URL untuk mengunduh test_data.csv dari DagsHub
-url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/test.csv"
-local_path = 'sentiment_analysis/datasets/test.csv'
+# Kalimat untuk testing
+sentences = [
+    "polri bertugas secara profesional dan tak pandang bulu.",
+    "semuanya masih proses awal belum masuk dalam rapat dpp dan belum dilaporkan kepada ibu ketua umum",
+    "enggak ada ancaman, cuman dibilangnya percuma punya teman punya saudara jadi pj gubernur, tapi gak ada gunanya"
+]
 
-# Jika file belum ada di direktori lokal, unduh dari DagsHub
-if not os.path.exists(local_path):
-    response = requests.get(url)
-    os.makedirs(os.path.dirname(local_path), exist_ok=True)
-    with open(local_path, 'wb') as f:
-        f.write(response.content)
+# Load model dari MLflow Model Registry
+model_uri = "models:/SentimentAnalysisNLP/latest"
+loaded_model = mlflow.pytorch.load_model(model_uri)
 
-# Load test dataset
-test_data = pd.read_csv(local_path)
-texts = test_data['text'].tolist()
-true_labels = test_data['label'].tolist()
+# Load tokenizer yang sesuai dengan model yang diload
+tokenizer = BertTokenizer.from_pretrained(model_uri)
 
-# Load model
-# registered_model = mlflow.get_latest_registered_model("SentimentAnalysisNLP")
-model_uri = f"models:/SentimentAnalysisNLP/latest"
-model = mlflow.pyfunc.load_model(model_uri)
+# Tokenisasi input sentences
+inputs = tokenizer(sentences, return_tensors="pt", padding=True, truncation=True)
 
-# tokenizer_local_path = mlflow.artifacts.download_artifacts(artifact_uri=f"{model_uri}/artifacts/model_dir")
-# tokenizer_artifact_uri = f"{model_uri}/artifacts/tokenizer"
-# tokenizer = BertTokenizer.from_pretrained(tokenizer_artifact_uri)
+# Gunakan model untuk prediksi
+with torch.no_grad():
+    outputs = loaded_model(**inputs)
+    logits = outputs.logits
+    predictions = torch.argmax(logits, dim=-1)
 
-# Prepare inputs
-tokenizer = BertTokenizer.from_pretrained('model')
-# tokenizer = model._model_impl.tokenizers
-inputs = tokenizer(texts, return_tensors="pt", padding=True)
-preds = model.predict(pd.DataFrame({'text': texts}))
+# Konversi tensor prediksi menjadi list
+predicted_labels = predictions.tolist()
 
-# Calculate accuracy
-accuracy = (preds == true_labels).mean()
-print(f"Test Accuracy: {accuracy}")
+# Output hasil prediksi
+for sentence, label in zip(sentences, predicted_labels):
+    print(f"Sentence: {sentence}")
+    print(f"Predicted Label: {label}\n")
