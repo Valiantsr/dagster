@@ -48,7 +48,7 @@ tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
 model = AutoModelForSequenceClassification.from_pretrained("indobenchmark/indobert-base-p1", num_labels=2)
 
 # Load model from MLflow
-model_uri = f"models:/IndoBERT_Sentiment/latest"
+model_uri = f"models:/IndoBERT-Sentiment-Model/latest"
 model = mlflow.pytorch.load_model(model_uri)
 
 # Create DataLoader

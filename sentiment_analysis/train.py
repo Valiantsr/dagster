@@ -54,10 +54,19 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 # Fine-tune model
 model.train()
 optimizer = AdamW(model.parameters(), lr=2e-5)
+epochs = 3
 losses = []
 
+# Log hyperparameters to MLflow
+mlflow.log_params({
+    "learning_rate": 2e-5,
+    "batch_size": 16,
+    "epochs": epochs,
+    "model_name": "indobenchmark/indobert-base-p1",
+})
+
 with mlflow.start_run(run_name="IndoBERT_Sentiment_Training"):
-    for epoch in range(3):  # 3 epochs for demonstration
+    for epoch in range(epochs):  # 3 epochs for demonstration
         epoch_loss = 0
         for batch in train_loader:
             outputs = model(**batch)
@@ -70,7 +79,10 @@ with mlflow.start_run(run_name="IndoBERT_Sentiment_Training"):
         losses.append(epoch_loss / len(train_loader))
         mlflow.log_metric("train_loss", epoch_loss / len(train_loader), step=epoch)
 
-    # Log model to MLflow
-    mlflow.pytorch.log_model(model, artifact_path="model")
+    # Log model to MLflow and register it in the model registry
+    model_info = mlflow.pytorch.log_model(model, artifact_path="model")
+    
+    # Register the model
+    mlflow.register_model(model_uri=model_info.model_uri, name="IndoBERT-Sentiment-Model")
 
-print("Training complete.")
+print("Training complete and model registered.")
