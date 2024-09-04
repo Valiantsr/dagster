@@ -1,73 +1,51 @@
 import os
 import mlflow
 import torch
-from torch.utils.data import DataLoader, Dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import pandas as pd
-import requests
+from torch.nn.functional import softmax
 
 # Set up MLflow tracking
 os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.mlflow'
 os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
 
-# Dataset class
-class SentimentDataset(Dataset):
-    def __init__(self, texts, labels, tokenizer):
-        self.texts = texts
-        self.labels = labels
-        self.tokenizer = tokenizer
-
-    def __len__(self):
-        return len(self.texts)
-
-    def __getitem__(self, idx):
-        inputs = self.tokenizer(self.texts[idx], return_tensors="pt", padding="max_length", truncation=True, max_length=128)
-        inputs = {key: val.squeeze(0) for key, val in inputs.items()}
-        inputs['labels'] = torch.tensor(self.labels[idx], dtype=torch.long)
-        return inputs
-
-# Load test data
-test_url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/test.tcv"
-test_path = 'datasets/test.csv'
-
-if not os.path.exists(test_path):
-    response = requests.get(test_url)
-    with open(test_path, 'wb') as f:
-        f.write(response.content)
-
-test_data = pd.read_csv(test_path)
-test_texts = test_data['text'].tolist()
-
-# Map string labels to integers
-label_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
-test_labels = [label_mapping[label] for label in test_data['label'].tolist()]
-
 # Initialize tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
-model = AutoModelForSequenceClassification.from_pretrained("indobenchmark/indobert-base-p1", num_labels=2)
 
-# Load model from MLflow
-model_uri = f"models:/IndoBERT_Sentiment/latest"
+# Load the latest model from MLflow
+model_uri = "models:/IndoBERT_Sentiment/latest"
 model = mlflow.pytorch.load_model(model_uri)
 
-# Create DataLoader
-test_dataset = SentimentDataset(test_texts, test_labels, tokenizer)
-test_loader = DataLoader(test_dataset, batch_size=16)
+# Custom sentences to test
+sentences = [
+    "Saya sangat senang dengan pelayanan di restoran ini.",
+    "Makanannya tidak enak dan pelayanannya buruk.",
+    "Pengalaman saya di toko ini biasa saja."
+]
 
-# Evaluate model on test data
+# Tokenize the sentences
+inputs = tokenizer(sentences, return_tensors="pt", padding="max_length", truncation=True, max_length=128)
+
+# Model evaluation
 model.eval()
-total, correct = 0, 0
+with torch.no_grad():
+    outputs = model(**inputs)
+    predictions = torch.argmax(outputs.logits, dim=-1)
+    probabilities = softmax(outputs.logits, dim=-1)
 
-with mlflow.start_run(run_name="IndoBERT_Sentiment_Testing"):
-    with torch.no_grad():
-        for batch in test_loader:
-            outputs = model(**batch)
-            _, predicted = torch.max(outputs.logits, 1)
-            correct += (predicted == batch['labels']).sum().item()
-            total += batch['labels'].size(0)
-        
-        accuracy = correct / total
-        mlflow.log_metric("test_accuracy", accuracy)
+# Map the predictions back to the label names
+label_mapping = {0: 'negative', 1: 'neutral', 2: 'positive'}
+predicted_labels = [label_mapping[pred.item()] for pred in predictions]
+predicted_probs = probabilities.tolist()
 
-print(f"Test Accuracy: {accuracy:.4f}")
+# Log results with MLflow
+with mlflow.start_run(run_name="IndoBERT_Sentiment_Custom_Testing"):
+    for i, sentence in enumerate(sentences):
+        print(f"Sentence: {sentence}")
+        print(f"Predicted Label: {predicted_labels[i]} ({predicted_probs[i]})")
+        mlflow.log_metric(f"sentence_{i}_predicted_label", predictions[i].item())
+        mlflow.log_metric(f"sentence_{i}_predicted_prob", max(predicted_probs[i]))
+
+        mlflow.log_param(f"sentence_{i}_text", sentence)
+
+print("Testing complete.")

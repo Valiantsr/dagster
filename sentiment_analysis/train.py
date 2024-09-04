@@ -11,6 +11,10 @@ os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/valiant.shabri/dagster.
 os.environ['MLFLOW_TRACKING_USERNAME'] = 'valiant.shabri'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699f1'
 
+# Force end any active MLflow run
+# if mlflow.active_run() is not None:
+#     mlflow.end_run()
+
 # Dataset class
 class SentimentDataset(Dataset):
     def __init__(self, texts, labels, tokenizer):
@@ -56,9 +60,6 @@ model.train()
 optimizer = AdamW(model.parameters(), lr=2e-5)
 epochs = 3
 losses = []
-
-# Ensure any active run is ended before starting a new one
-# mlflow.end_run()
 
 with mlflow.start_run(run_name="IndoBERT_Sentiment_Training"):
     for epoch in range(epochs):  # 3 epochs for demonstration
