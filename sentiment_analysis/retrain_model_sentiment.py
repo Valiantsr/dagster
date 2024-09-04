@@ -1,6 +1,5 @@
 import os
 import mlflow
-import mlflow.pyfunc
 import torch
 import pandas as pd
 import requests
@@ -16,15 +15,17 @@ model_name = "SentimentAnalysisNLP"
 client = mlflow.tracking.MlflowClient()
 latest_version = client.get_latest_versions(model_name, stages=["None"])[-1].version
 model_uri = f"models:/{model_name}/{latest_version}"
-loaded_model = mlflow.pyfunc.load_model(model_uri)
 
 # Prepare the directory where the model files will be saved
 model_dir = '/tmp/sentiment_analysis_model'
 os.makedirs(model_dir, exist_ok=True)
 
-# Load the tokenizer and model from the MLflow model registry
-tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
-model = AutoModelForSequenceClassification.from_pretrained(model_uri)
+# Download and extract the model artifacts from MLflow
+mlflow.pyfunc.download_artifacts(model_uri, dst_path=model_dir)
+
+# Load the tokenizer and model from the downloaded artifacts
+tokenizer = AutoTokenizer.from_pretrained(model_dir)
+model = AutoModelForSequenceClassification.from_pretrained(model_dir)
 
 # Download dataset
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
