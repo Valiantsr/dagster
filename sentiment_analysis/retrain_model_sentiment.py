@@ -38,7 +38,7 @@ if not os.path.exists(config_path):
     print("config.json not found, using pretrained IndoBERT tokenizer")
     tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
 else:
-    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+    tokenizer = AutoTokenizer.from_pretrained(config_path)
 
 # Load the model from the downloaded artifacts
 model = AutoModelForSequenceClassification.from_pretrained(model_dir)
