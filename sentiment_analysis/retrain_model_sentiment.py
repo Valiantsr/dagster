@@ -31,7 +31,7 @@ for root, dirs, files in os.walk(model_dir):
         print(os.path.join(root, file))
 
 # Check if config.json exists in the downloaded artifacts
-config_path = os.path.join(model_dir, 'config.json')
+config_path = os.path.join(model_dir + '/artifacts/models/', 'config.json')
 
 # If config.json is missing, use a default tokenizer from Hugging Face
 if not os.path.exists(config_path):
