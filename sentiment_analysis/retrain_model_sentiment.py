@@ -15,23 +15,32 @@ model_name = "SentimentAnalysisNLP"
 client = mlflow.tracking.MlflowClient()
 latest_version = client.get_latest_versions(model_name, stages=["None"])[-1].version
 model_uri = f"models:/{model_name}/{latest_version}"
-loaded_model = mlflow.pyfunc.load_model(model_uri)
 
 # Prepare the directory where the model files will be saved
-artifact_uri = client.download_artifacts(client.get_latest_versions(model_name)[-1].run_id, '')
-model_dir = os.path.join(artifact_uri, "artifacts", "models")
-
-# Log the directory for verification
+model_dir = '/tmp/sentiment_analysis_model'
 os.makedirs(model_dir, exist_ok=True)
 
-# List the contents of the model directory to verify
+# Download and extract the model artifacts from MLflow
+mlflow.artifacts.download_artifacts(artifact_uri=model_uri, dst_path=model_dir)
+
+# List the contents of the model directory
+model_dir = '/tmp/sentiment_analysis_model'
 print("Contents of model_dir:")
 for root, dirs, files in os.walk(model_dir):
     for file in files:
         print(os.path.join(root, file))
 
-# Load the tokenizer and model from the correct directory
-tokenizer = AutoTokenizer.from_pretrained(model_dir)
+# Check if config.json exists in the downloaded artifacts
+config_path = os.path.join(model_dir, 'config.json')
+
+# If config.json is missing, use a default tokenizer from Hugging Face
+if not os.path.exists(config_path):
+    print("config.json not found, using pretrained IndoBERT tokenizer")
+    tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
+else:
+    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+
+# Load the model from the downloaded artifacts
 model = AutoModelForSequenceClassification.from_pretrained(model_dir)
 
 # Download dataset
