@@ -1,7 +1,3 @@
-#     # Register the model in the MLflow Model Registry
-#     model_uri = f"runs:/{mlflow.active_run().info.run_id}/model"
-#     mlflow.register_model(model_uri=model_uri, name="SentimentAnalysisNLP")
-
 import os
 import mlflow
 import mlflow.pyfunc

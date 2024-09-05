@@ -15,7 +15,7 @@ model_name = "SentimentAnalysisNLP"
 client = mlflow.tracking.MlflowClient()
 latest_version = client.get_latest_versions(model_name, stages=["None"])[-1].version
 model_uri = f"models:/{model_name}/{latest_version}"
-# loaded_model = mlflow.pyfunc.load_model(model_uri)
+loaded_model = mlflow.pyfunc.load_model(model_uri)
 
 # Prepare the directory where the model files will be saved
 artifact_uri = client.download_artifacts(client.get_latest_versions(model_name)[-1].run_id, '')
@@ -31,8 +31,8 @@ for root, dirs, files in os.walk(model_dir):
         print(os.path.join(root, file))
 
 # Load the tokenizer and model from the correct directory
-tokenizer = AutoTokenizer.from_pretrained(model_dir)
-model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+tokenizer = AutoTokenizer.from_pretrained(loaded_model)
+model = AutoModelForSequenceClassification.from_pretrained(loaded_model)
 
 # Download dataset
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
