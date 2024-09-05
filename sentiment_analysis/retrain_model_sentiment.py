@@ -13,37 +13,29 @@ os.environ['MLFLOW_TRACKING_PASSWORD'] = 'd37b33ad4e0564f52162d90248e477d373a699
 # Load model from MLflow model registry
 model_name = "SentimentAnalysisNLP"
 client = mlflow.tracking.MlflowClient()
+
+# Get the latest version of the model
 latest_version = client.get_latest_versions(model_name, stages=["None"])[-1].version
-model_uri = f"models:/{model_name}/{latest_version}"
 
 # Prepare the directory where the model files will be saved
 model_dir = '/tmp/sentiment_analysis_model'
 os.makedirs(model_dir, exist_ok=True)
 
 # Download and extract the model artifacts from MLflow
-mlflow.artifacts.download_artifacts(artifact_uri=model_uri, dst_path=model_dir)
+run_id = client.get_latest_versions(model_name)[-1].run_id
+artifact_uri = client.download_artifacts(run_id, 'model', dst_path=model_dir)
 
-# List the contents of the model directory
-model_dir = '/tmp/sentiment_analysis_model'
+# Log the directory for verification
 print("Contents of model_dir:")
 for root, dirs, files in os.walk(model_dir):
     for file in files:
         print(os.path.join(root, file))
 
-# Check if config.json exists in the downloaded artifacts
-config_path = os.path.join(model_dir + '/artifacts/models/', 'config.json')
-
-# If config.json is missing, use a default tokenizer from Hugging Face
-if not os.path.exists(config_path):
-    print("config.json not found, using pretrained IndoBERT tokenizer")
-    tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
-else:
-    tokenizer = AutoTokenizer.from_pretrained(config_path)
-
-# Load the model from the downloaded artifacts
+# Load the tokenizer and model from the downloaded artifacts
+tokenizer = AutoTokenizer.from_pretrained(model_dir)
 model = AutoModelForSequenceClassification.from_pretrained(model_dir)
 
-# Download dataset
+# Download dataset to the same directory as model artifacts
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
 local_path = os.path.join(model_dir, 'retrain.csv')
 
@@ -51,6 +43,9 @@ if not os.path.exists(local_path):
     response = requests.get(url)
     with open(local_path, 'wb') as f:
         f.write(response.content)
+    print(f"Dataset downloaded and saved to: {local_path}")
+else:
+    print(f"Dataset already exists at: {local_path}")
 
 # Load dataset
 data = pd.read_csv(local_path)
