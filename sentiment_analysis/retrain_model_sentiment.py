@@ -15,10 +15,11 @@ model_name = "SentimentAnalysisNLP"
 client = mlflow.tracking.MlflowClient()
 latest_version = client.get_latest_versions(model_name, stages=["None"])[-1].version
 model_uri = f"models:/{model_name}/{latest_version}"
-loaded_model = mlflow.pyfunc.load_model(model_uri)
+# loaded_model = mlflow.pyfunc.load_model(model_uri)
 
 # Prepare the directory where the model files will be saved
-model_dir = mlflow.pyfunc.load_model(model_uri)._model_impl.artifacts['models']
+artifact_uri = client.download_artifacts(client.get_latest_versions(model_name)[-1].run_id, '')
+model_dir = os.path.join(artifact_uri, "artifacts", "models")
 
 # Log the directory for verification
 os.makedirs(model_dir, exist_ok=True)
