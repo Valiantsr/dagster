@@ -23,6 +23,12 @@ os.makedirs(model_dir, exist_ok=True)
 # Download and extract the model artifacts from MLflow
 mlflow.artifacts.download_artifacts(artifact_uri=model_uri, dst_path=model_dir)
 
+model_dir = '/tmp/sentiment_analysis_model'
+print("Contents of model_dir:")
+for root, dirs, files in os.walk(model_dir):
+    for file in files:
+        print(os.path.join(root, file))
+
 # Check if config.json exists in the downloaded artifacts
 config_path = os.path.join(model_dir, 'config.json')
 
