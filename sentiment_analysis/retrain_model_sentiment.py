@@ -18,7 +18,9 @@ model_uri = f"models:/{model_name}/{latest_version}"
 loaded_model = mlflow.pyfunc.load_model(model_uri)
 
 # Prepare the directory where the model files will be saved
-model_dir = '/tmp/sentiment_analysis_model/artifacts/models/'
+model_dir = mlflow.pyfunc.load_model(model_uri)._model_impl.artifacts['models']
+
+# Log the directory for verification
 os.makedirs(model_dir, exist_ok=True)
 
 # List the contents of the model directory to verify
