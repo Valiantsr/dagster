@@ -96,7 +96,7 @@ class SentimentAnalysisModel(mlflow.pyfunc.PythonModel):
 with mlflow.start_run(run_name="Sentiment_Analysis_Model_Log"):
     # Log the custom model
     mlflow.pyfunc.log_model(
-        # artifact_path="model",
+        artifact_path="model",
         python_model=SentimentAnalysisModel(),
         registered_model_name=registered_model_name,
         input_example=input_example,

@@ -31,8 +31,8 @@ for root, dirs, files in os.walk(model_dir):
         print(os.path.join(root, file))
 
 # Load the tokenizer and model from the correct directory
-tokenizer = AutoTokenizer.from_pretrained(loaded_model)
-model = AutoModelForSequenceClassification.from_pretrained(loaded_model)
+tokenizer = AutoTokenizer.from_pretrained(model_dir)
+model = AutoModelForSequenceClassification.from_pretrained(model_dir)
 
 # Download dataset
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
