@@ -15,34 +15,21 @@ model_name = "SentimentAnalysisNLP"
 client = mlflow.tracking.MlflowClient()
 latest_version = client.get_latest_versions(model_name, stages=["None"])[-1].version
 model_uri = f"models:/{model_name}/{latest_version}"
+loaded_model = mlflow.pyfunc.load_model(model_uri)
 
 # Prepare the directory where the model files will be saved
-model_dir = '/tmp/sentiment_analysis_model'
+model_dir = '/tmp/sentiment_analysis_model/artifacts/models/'
 os.makedirs(model_dir, exist_ok=True)
 
-# Download and extract the model artifacts from MLflow
-mlflow.artifacts.download_artifacts(artifact_uri=model_uri, dst_path=model_dir)
-
-model_dir = '/tmp/sentiment_analysis_model'
+# List the contents of the model directory to verify
 print("Contents of model_dir:")
 for root, dirs, files in os.walk(model_dir):
     for file in files:
         print(os.path.join(root, file))
 
-# Check if config.json exists in the downloaded artifacts
-config_path = os.path.join(model_dir, 'config.json')
-
-model_path = '/tmp/sentiment_analysis_model/artifacts/models/'
-
-# If config.json is missing, use a default tokenizer from Hugging Face
-if not os.path.exists(config_path):
-    print("config.json not found, using pretrained IndoBERT tokenizer")
-    tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
-else:
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-
-# Load the model from the downloaded artifacts
-model = AutoModelForSequenceClassification.from_pretrained(model_path)
+# Load the tokenizer and model from the correct directory
+tokenizer = AutoTokenizer.from_pretrained(model_dir)
+model = AutoModelForSequenceClassification.from_pretrained(model_dir)
 
 # Download dataset
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
