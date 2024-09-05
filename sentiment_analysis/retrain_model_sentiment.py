@@ -32,15 +32,17 @@ for root, dirs, files in os.walk(model_dir):
 # Check if config.json exists in the downloaded artifacts
 config_path = os.path.join(model_dir, 'config.json')
 
+model_path = '/tmp/sentiment_analysis_model/artifacts/models/'
+
 # If config.json is missing, use a default tokenizer from Hugging Face
 if not os.path.exists(config_path):
     print("config.json not found, using pretrained IndoBERT tokenizer")
     tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
 else:
-    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
 
 # Load the model from the downloaded artifacts
-model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+model = AutoModelForSequenceClassification.from_pretrained(model_path)
 
 # Download dataset
 url = "https://dagshub.com/api/v1/repos/valiant.shabri/dagster/storage/raw/s3/dagster/data/retrain.csv"
