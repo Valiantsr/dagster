@@ -21,10 +21,19 @@ model_dir = '/tmp/sentiment_analysis_model'
 os.makedirs(model_dir, exist_ok=True)
 
 # Download and extract the model artifacts from MLflow
-mlflow.artifacts.download_artifacts(model_uri, dst_path=model_dir)
+mlflow.artifacts.download_artifacts(artifact_uri=model_uri, dst_path=model_dir)
 
-# Load the tokenizer and model from the downloaded artifacts
-tokenizer = AutoTokenizer.from_pretrained(model_dir)
+# Check if config.json exists in the downloaded artifacts
+config_path = os.path.join(model_dir, 'config.json')
+
+# If config.json is missing, use a default tokenizer from Hugging Face
+if not os.path.exists(config_path):
+    print("config.json not found, using pretrained IndoBERT tokenizer")
+    tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p1")
+else:
+    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+
+# Load the model from the downloaded artifacts
 model = AutoModelForSequenceClassification.from_pretrained(model_dir)
 
 # Download dataset
