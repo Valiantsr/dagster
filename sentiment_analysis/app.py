@@ -1,6 +1,7 @@
 import os
 import mlflow
 import torch
+import uvicorn
 from transformers import AutoTokenizer
 from torch.nn.functional import softmax
 from fastapi import FastAPI, HTTPException
