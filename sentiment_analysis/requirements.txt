@@ -4,3 +4,4 @@ transformers
 pandas
 uvicorn
 fastapi
+pydantic
