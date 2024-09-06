@@ -57,3 +57,7 @@ async def predict_sentiment(request: SentimentRequest):
 @app.get("/")
 def read_root():
     return {"message": "IndoBERT Sentiment Analysis API is running."}
+
+# Main entry point to run the app
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=5000)
