@@ -14,5 +14,4 @@ COPY . /app
 EXPOSE 5000
 
 # Run the main application
-# CMD ["python", "train.py"]
-CMD ["python", "log_model_sentiment.py"]
+CMD ["python", "app.py"]
