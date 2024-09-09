@@ -2,6 +2,6 @@ mlflow
 torch
 transformers
 pandas
-uvicorn
 fastapi
+uvicorn
 pydantic
