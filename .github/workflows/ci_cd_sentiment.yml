@@ -34,8 +34,8 @@ jobs:
       - name: Test API
         run: |
           docker run -d --name sentiment-model -p 5000:5000 valiantsr/sentiment-model:latest
-          sleep 10
-          curl -X POST http://0.0.0.0:5000/predict -H "Content-Type: application/json" -d '{"text": "Your test text here"}'
+          sleep 60
+          curl -X POST http://0.0.0.0:5000/predict -H "Content-Type: application/json" -d '{"text": "polri bertugas secara profesional dan tak pandang bulu."}'
 
       # - name: Log model
       #   run: docker run --rm valiantsr/sentiment-model:latest python log_model_sentiment.py
